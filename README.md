@@ -2,8 +2,6 @@
 CIS 4914 Senior Project
 
 # Team:
-Jonathan Kahn
-
-Max Epstein
-
+Jonathan Kahn \
+Max Epstein \
 Logan Spratt
