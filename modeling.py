@@ -20,3 +20,10 @@
     # 17 Multilayer Perceptron MLP
 
 # 100 random states (seeds); Keep track of them!
+
+from sklearn.tree import DecisionTreeClassifier
+def model_decisiontree(X_train, X_test, y_train, y_test, state=42):
+    dt = DecisionTreeClassifier()
+    dt.fit(X_train, y_train)
+    y_pred = dt.predict(X_test)
+    return y_pred, dt
