@@ -11,5 +11,24 @@
 # Imports
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
+from sklearn.model_selection import train_test_split
 from sklearn.feature_selection import VarianceThreshold
 
+def preprocess(data, state=42):
+    X, y = data[:,:-1], data[:,-1]
+    y = y.astype(int)
+    
+    # 1b - Encode Target Variable
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 42) # TODO: reconfigure to run 100 times and save state each time
+    
+    # 2 - Remove features with zero variance (VarianceThreshold)
+    vt = VarianceThreshold()
+    X_train = vt.fit_transform(X_train)
+    X_test = vt.transform(X_test)
+
+    # 3 - Normalize the dataset (MinMax Scaler)
+    mm = MinMaxScaler()
+    X_train = mm.fit_transform(X_train)
+    X_test = mm.transform(X_test)
+
+    return (X_train, X_test, y_train, y_test)
