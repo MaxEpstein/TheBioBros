@@ -41,3 +41,45 @@ def model_gradientboosting(X_train, X_test, y_train, y_test, state=42):
     gb.fit(X_train, y_train)
     y_pred = gb.predict(X_test)
     return y_pred, gb
+
+#import xgboost as xgb
+#from xgboost.sklearn import XGBClassifier
+#def model_extremegb(X_train, X_test, y_train, y_test, state=42):
+#    xgb = XGBClassifier(random_state=state)
+#    xgb.fit(X_train, y_train)
+#    y_pred = xgb.predict(X_test)
+#    return y_pred, xgb
+
+#from lightgbm import LGBMClassifier
+#def model_lightgb(X_train, X_test, y_train, y_test, state=42):
+#    lgb = LGBMClassifier(random_state=state)
+#    lgb.fit(X_train, y_train)
+#    y_pred = lgb.predict(X_test)
+#    return y_pred, lgb
+
+from sklearn.ensemble import ExtraTreesClassifier
+def model_extratrees(X_train, X_test, y_train, y_test, state=42):
+    et = ExtraTreesClassifier(random_state=state)
+    et.fit(X_train, y_train)
+    y_pred = et.predict(X_test)
+    return y_pred, et
+
+from sklearn.ensemble import AdaBoostClassifier
+def model_adaboost(X_train, X_test, y_train, y_test, state=42):
+    ab = AdaBoostClassifier(random_state=state)
+    ab.fit(X_train, y_train)
+    y_pred = ab.predict(X_test)
+    return y_pred, ab
+
+from sklearn.linear_model import LogisticRegression
+def model_logisticregression(X_train, X_test, y_train, y_test, state=42):
+    lr = LogisticRegression(random_state=state)
+    lr.fit(X_train, y_train)
+    y_pred = lr.predict(X_test)
+    return y_pred, lr
+
+def model_lassoregularization(X_train, X_test, y_train, y_test, state=42):
+    lr1 = LogisticRegression(penalty = 'l1', random_state=state)
+    lr1.fit(X_train, y_train)
+    y_pred = lr1.predict(X_test)
+    return y_pred, lr1
