@@ -23,7 +23,21 @@
 
 from sklearn.tree import DecisionTreeClassifier
 def model_decisiontree(X_train, X_test, y_train, y_test, state=42):
-    dt = DecisionTreeClassifier()
+    dt = DecisionTreeClassifier(random_state=state)
     dt.fit(X_train, y_train)
     y_pred = dt.predict(X_test)
     return y_pred, dt
+
+from sklearn.ensemble import RandomForestClassifier
+def model_randomforest(X_train, X_test, y_train, y_test, state=42):
+    rf = RandomForestClassifier(random_state=state)
+    rf.fit(X_train, y_train)
+    y_pred = rf.predict(X_test)
+    return y_pred, rf
+
+from sklearn.ensemble import GradientBoostingClassifier
+def model_gradientboosting(X_train, X_test, y_train, y_test, state=42):
+    gb = GradientBoostingClassifier(random_state=state)
+    gb.fit(X_train, y_train)
+    y_pred = gb.predict(X_test)
+    return y_pred, gb
