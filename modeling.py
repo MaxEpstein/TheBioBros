@@ -51,7 +51,7 @@ def model_extremegb(X_train, X_test, y_train, y_test, state=42):
 
 from lightgbm import LGBMClassifier
 def model_lightgb(X_train, X_test, y_train, y_test, state=42):
-   lgb = LGBMClassifier(random_state=state)
+   lgb = LGBMClassifier(random_state=state, verbose = -1)
    lgb.fit(X_train, y_train)
    y_pred = lgb.predict(X_test)
    return y_pred, lgb
