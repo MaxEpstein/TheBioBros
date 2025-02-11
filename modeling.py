@@ -42,20 +42,19 @@ def model_gradientboosting(X_train, X_test, y_train, y_test, state=42):
     y_pred = gb.predict(X_test)
     return y_pred, gb
 
-#import xgboost as xgb
-#from xgboost.sklearn import XGBClassifier
-#def model_extremegb(X_train, X_test, y_train, y_test, state=42):
-#    xgb = XGBClassifier(random_state=state)
-#    xgb.fit(X_train, y_train)
-#    y_pred = xgb.predict(X_test)
-#    return y_pred, xgb
+from xgboost.sklearn import XGBClassifier
+def model_extremegb(X_train, X_test, y_train, y_test, state=42):
+   xgb = XGBClassifier(random_state=state)
+   xgb.fit(X_train, y_train)
+   y_pred = xgb.predict(X_test)
+   return y_pred, xgb
 
-#from lightgbm import LGBMClassifier
-#def model_lightgb(X_train, X_test, y_train, y_test, state=42):
-#    lgb = LGBMClassifier(random_state=state)
-#    lgb.fit(X_train, y_train)
-#    y_pred = lgb.predict(X_test)
-#    return y_pred, lgb
+from lightgbm import LGBMClassifier
+def model_lightgb(X_train, X_test, y_train, y_test, state=42):
+   lgb = LGBMClassifier(random_state=state)
+   lgb.fit(X_train, y_train)
+   y_pred = lgb.predict(X_test)
+   return y_pred, lgb
 
 from sklearn.ensemble import ExtraTreesClassifier
 def model_extratrees(X_train, X_test, y_train, y_test, state=42):
