@@ -96,16 +96,16 @@ def model_elasticNetRegularization(X_train, X_test, Y_train, Y_test, state=42):
     y_pred = lrE.predict(X_test)
     return y_pred, lrE
 
-from sklearn.svm import LinearSVC
+from sklearn.svm import SVC
 def model_linearSupportVector(X_train, X_test, Y_train, Y_test, state=42):
-    lsv = LinearSVC(penalty='l2', random_state=state)
+    lsv = SVC(random_state=state, probability=True, kernel='linear')
     lsv.fit(X_train, Y_train)
     y_pred = lsv.predict(X_test)
     return y_pred, lsv
 
-from sklearn.svm import SVC
+
 def model_nonLinearSupportVector(X_train, X_test, Y_train, Y_test, state=42):
-    nlsv = SVC(random_state=state)
+    nlsv = SVC(random_state=state, probability=True)
     nlsv.fit(X_train, Y_train)
     y_pred = nlsv.predict(X_test)
     return y_pred, nlsv
