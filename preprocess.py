@@ -5,8 +5,8 @@
         # 1b: Train-Test Split of 80% - 20%
     # 2: Remove features with zero variance (VarianceThreshold)
     # 3: Normalize the dataset (MinMax Scaler)
-        # NOTE: Do Steps 2 and 3 by fitting to Training Set, then applying same transformation to test set also 
-            # (but don't train on test set!!!)
+    # 4: Apply Feature Selection Methods (optionally)
+    # 5: Apply Feature Extraction Methods (optionally)
 
 # Imports
 import numpy as np
@@ -15,7 +15,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.feature_selection import VarianceThreshold
 from sklearn.feature_selection import f_classif, chi2, mutual_info_classif, SelectKBest
 from sklearn.decomposition import PCA, KernelPCA
-# import umap # <-- dependency issue needs to be solved
+import umap
 
 def preprocess(data, state=42, selection=None, extraction=None, k=10):
     try:
@@ -67,8 +67,9 @@ def preprocess(data, state=42, selection=None, extraction=None, k=10):
             case 'kpca':
                 extractor = KernelPCA(n_components=min(k, X_train.shape[1]), kernel="rbf")
             case 'umap': # Need to revisit dependencies to fix!!!
-                extractor = None
-                # extractor = umap.UMAP(n_components=min(k, X_train.shape[1]), random_state=state) 
+                if k >= X_train.shape[1]:
+                    print(f"k value too large, using {X_train.shape[1] - 1} instead.")
+                extractor = umap.UMAP(n_components=min(k, X_train.shape[1] - 1), random_state=state) 
             case None:
                 extractor = None
             case _:
