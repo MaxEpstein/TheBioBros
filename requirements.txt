@@ -11,7 +11,7 @@ exceptiongroup==1.2.2
 executing==2.1.0
 Flask==3.1.0
 fonttools==4.56.0
-importlib_metadata 8.6.1
+importlib_metadata==8.6.1
 ipykernel==6.29.5
 ipython==8.34.0
 itsdangerous==2.2.0
