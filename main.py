@@ -64,8 +64,11 @@ def main():
             model_metrics[model]['recall'] += metric[3]
             model_metrics[model]['f1'] += metric[4]
 
-    # for model in model_names:
-        plt.bar(['auc', 'acc', 'precision', 'recall', 'f1'], np.array(list(model_metrics['dt'].values())), color=np.random.rand(3,))
+    for model in model_names:
+        plt.bar(['auc', 'acc', 'precision', 'recall', 'f1'], np.array(list(model_metrics[model].values())), color=np.random.rand(3,))
+        plt.xlabel("Metric")
+        plt.ylabel("Average (%)")
+        plt.title(model)
         plt.show()
 
     # calculate the averages for each model
