@@ -4,6 +4,7 @@ import modeling as models
 from sklearn.datasets import make_classification
 from sklearn.metrics import accuracy_score, confusion_matrix
 from metrics import getMetrics
+import matplotlib.pyplot as plt
 
 def main():
     # Synthetic Data
@@ -45,33 +46,41 @@ def main():
 
     # basic view for now to see some metrics
     model_metrics = {}
+    model_metrics['auc'] = {}
+    model_metrics['acc'] = {}
+    model_metrics['precision'] = {}
+    model_metrics['recall'] ={}
+    model_metrics['f1'] = {}
     for modelName in model_names:
-        model_metrics[modelName] = {}
-        model_metrics[modelName]['auc'] = 0.0
-        model_metrics[modelName]['acc'] = 0.0
-        model_metrics[modelName]['precision'] = 0.0
-        model_metrics[modelName]['recall'] = 0.0
-        model_metrics[modelName]['f1'] = 0.0
+        model_metrics['auc'][modelName] = 0.0
+        model_metrics['acc'][modelName] = 0.0
+        model_metrics['precision'][modelName] = 0.0
+        model_metrics['recall'][modelName] = 0.0
+        model_metrics['f1'][modelName] = 0.0
 
     # calculate the metrics for all models
     for rst in data_splits.keys():
         for model in model_names:
             metric = getMetrics(data_splits[rst][3], data_splits[rst][1], model_res[model][rst][0], model_res[model][rst][1])
-            model_metrics[model]['auc'] += metric[0]
-            model_metrics[model]['acc'] += metric[1]
-            model_metrics[model]['precision'] += metric[2]
-            model_metrics[model]['recall'] += metric[3]
-            model_metrics[model]['f1'] += metric[4]
+            model_metrics['auc'][model] += metric[0]
+            model_metrics['acc'][model] += metric[1]
+            model_metrics['precision'][model] += metric[2]
+            model_metrics['recall'][model] += metric[3]
+            model_metrics['f1'][model] += metric[4]
+
+    # for model in model_names:
+        plt.bar(model_names, np.array(list(model_metrics['auc'].values())), color=np.random.rand(3,))
+        plt.show()
 
     # calculate the averages for each model
     model_averages = {}
     for model in model_names:
         model_averages[model] = {}
-        model_averages[model]['auc'] = model_metrics[model]['auc'] / len(data_splits)
-        model_averages[model]['acc'] = model_metrics[model]['acc'] / len(data_splits)
-        model_averages[model]['precision'] = model_metrics[model]['precision'] / len(data_splits)
-        model_averages[model]['recall'] = model_metrics[model]['recall'] / len(data_splits)
-        model_averages[model]['f1'] = model_metrics[model]['f1'] / len(data_splits)
+        model_averages['auc'][model] = model_metrics['auc'][model]['auc'] / len(data_splits)
+        model_averages['acc'][model] = model_metrics['acc'][model] / len(data_splits)
+        model_averages['precision'][model] = model_metrics['precision'] [model] / len(data_splits)
+        model_averages['recall'][model] = model_metrics['recall'][model] / len(data_splits)
+        model_averages['f1'][model] = model_metrics['f1'][model] / len(data_splits)
     print(model_averages)
 
 
