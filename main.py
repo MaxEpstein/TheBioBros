@@ -69,6 +69,7 @@ def pipeline(data, selection=None, extraction=None, k=20):
     maxidx = df_model_metrics['auc'].argmax()
     best_model_name = df_model_metrics['auc'].index.to_list()[maxidx]
     print(f"Best Model (by ROC AUC): {best_model_name}")
+    # TODO: Return Ensemble Model
     return data_splits, model_res, model_metrics, model_averages, df_model_metrics, best_model_name
 
 
@@ -83,7 +84,6 @@ def main():
     #     plt.ylabel("Average (%)")
     #     plt.title(model)
     #     plt.show()
-
     # Ensemble Model #TODO: Figure out which models we're pulling! Random State Data Splits (which specific model/rst in model_name to pull?)
     pass
 
