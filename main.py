@@ -92,11 +92,10 @@ def main():
                                      [model_info[1][1] for model_info in clr_model_res[clr_best_model_name].items()])
 
 if __name__ == "__main__":
-    X, y = make_classification(n_samples=20, n_features=5, random_state=42)
-    test_data = np.concatenate((X, y.reshape(-1, 1)), axis = 1)
+    # X, y = make_classification(n_samples=20, n_features=5, random_state=42)
+    # test_data = np.concatenate((X, y.reshape(-1, 1)), axis = 1)
 
     rarefaction_data = pd.read_csv("rarefied-feature-table-labeled.csv")
-    rarefaction_data = rarefaction_data.drop(columns=['Diagnosis'])
     data_splits, model_res, model_metrics, model_averages, df_model_metrics, best_model_name = pipeline(rarefaction_data.iloc[:,1:].to_numpy())
 
     for model in MODEL_LIST:
