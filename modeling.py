@@ -140,10 +140,10 @@ def model_multiLayerPerceptron(X_train, X_test, Y_train, Y_test, state=42):
     return y_pred, mlp
 
 from sklearn.ensemble import VotingClassifier
-def ensemble_model(rarefaction_model, clr_model, X_train, X_test, Y_train, Y_test):
+def ensemble_model(rarefaction_models, clr_models):
     ensemble = VotingClassifier(estimators=[
-        (f'Rarefaction Choice {i}', rare_model) for i, rare_model in enumerate(rarefaction_model)]
-        + [(f'CLR Choice {i}', clr_model) for i, clr_model in enumerate(clr_model)], voting='soft')
-    ensemble.fit(X_train, Y_train)
-    y_pred = ensemble.predict(X_test)
-    return y_pred, ensemble
+        (f'Rarefaction Choice {i}', rare_model) for i, rare_model in enumerate(rarefaction_models)]
+        + [(f'CLR Choice {i}', clr_model) for i, clr_model in enumerate(clr_models)], voting='soft')
+    # ensemble.fit(X_train, Y_train)
+    # y_pred = ensemble.predict(X_test)
+    return ensemble

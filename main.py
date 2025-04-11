@@ -1,8 +1,6 @@
 import numpy as np
 import preprocess
 import modeling as models
-from sklearn.datasets import make_classification
-from sklearn.metrics import accuracy_score, confusion_matrix
 from metrics import getMetrics
 import pandas as pd
 from metrics import interpret
@@ -65,11 +63,10 @@ def pipeline(data, selection=None, extraction=None, k=20):
         model_averages[model]['f1'] = np.mean([model_metrics[model][rst]['f1'] for rst in data_splits.keys()])
     
     df_model_metrics = pd.DataFrame.from_dict(model_averages, orient='index')
-    print(df_model_metrics.head())
+    print(df_model_metrics)
     maxidx = df_model_metrics['auc'].argmax()
     best_model_name = df_model_metrics['auc'].index.to_list()[maxidx]
     print(f"Best Model (by ROC AUC): {best_model_name}")
-    # TODO: Return Ensemble Model
     return data_splits, model_res, model_metrics, model_averages, df_model_metrics, best_model_name
 
 
@@ -84,11 +81,12 @@ def main():
     #     plt.ylabel("Average (%)")
     #     plt.title(model)
     #     plt.show()
-    # Ensemble Model #TODO: Figure out which models we're pulling! Random State Data Splits (which specific model/rst in model_name to pull?)
-    pass
+
+    # Ensemble Model #TODO: What to run it on?
+    ensemble = models.ensemble_model([model_info[1][1] for model_info in rare_model_res[rare_best_model_name].items()],
+                                     [model_info[1][1] for model_info in clr_model_res[clr_best_model_name].items()])
 
 if __name__ == "__main__":
-    # Rarefaction Dataset
     X, y = make_classification(n_samples=20, n_features=5, random_state=42)
     data = np.concatenate((X, y.reshape(-1, 1)), axis = 1)
     _ = pipeline(data)
