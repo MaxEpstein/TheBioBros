@@ -1,25 +1,21 @@
 # For testing the optimal K values for RF (suggested baseline model per Tima's paper)
     # among feature engineering and feature selection methods
 
-k_vals = [1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160]
-
-methods = ["chi2", "f", "mutual", "pca", "kpca", "umap", None]
-selections = ["chi2", "f", "mutual"]
-extractions = ["pca", "kpca", "umap"]
-
 # Synthetic Data
 import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
 import preprocess
 import modeling as models
-from sklearn.datasets import make_classification
 from metrics import getMetrics
 
-X, y = make_classification(n_samples=200, n_features=200, random_state=42)
-data = np.concatenate((X, y.reshape(-1, 1)), axis = 1)
-np.random.seed(42)
-states = np.random.randint(low = 0, high = 1000000, size=(100,)) # numpy array with our 100 random states
+def run_k_test(data, model_name, states, k_vals, title=""):
+    methods = ["chi2", "f", "mutual", "pca", "kpca", "umap", "none"]
+    selections = ["chi2", "f", "mutual"]
+    extractions = ["pca", "kpca", "umap"]
 
-with open('k_test.txt', mode="w") as file:
+    results = []
+
     for k in k_vals:
         for method in methods:
             data_splits = {}
@@ -29,35 +25,104 @@ with open('k_test.txt', mode="w") as file:
                                                         extraction=method if method in extractions else None, k=k)
             
             model_res = {} # key as model type, then sub dictionary with rst as key and predicted classes & model itself ex: model_res["dt"][rst] --> (y_pred_dt, dt) 
-            model_res["rf"] = {}
+            model_res[model_name] = {}
+            func = None
+            match model_name: 
+                case "rf":
+                    func = models.model_randomforest
+                case "dt":
+                    func = models.model_decisiontree
+                case "gb":
+                    func = models.model_gradientboosting
+                case "xgb":
+                    func = models.model_extremegb
+                case "lgb":
+                    func = models.model_lightgb
+                case "et":
+                    func = models.model_extratrees
+                case "gb":
+                    func = models.model_gradientboosting
+                case "ab":    
+                    func = models.model_adaboost
+                case "lr":
+                    func = models.model_logisticregression
+                case "lr1":
+                    func = models.model_lassoregularization
+                case "lr2":
+                    func = models.model_ridgeRegularization
+                case "lre":
+                    func = models.model_elasticNetRegularization
+                case "lsv":
+                    func = models.model_linearSupportVector
+                case "nlsv":
+                    func = models.model_nonLinearSupportVector
+                case "knn":
+                    func = models.model_kNearestNeighbor
+                case "lda":    
+                    func = models.model_linearDiscriminantAnalysis
+                case "gnb":    
+                    func = models.model_gaussianNaiveBayes
+                case "mlp":    
+                    func = models.model_multiLayerPerceptron
+                case _:
+                    raise RuntimeError("Invalid Model Name Received")
 
             for state in data_splits.keys():    
-                model_res["rf"][state] = models.model_randomforest(*data_splits[state])
+                model_res[model_name][state] = func(*data_splits[state])
 
             model_metrics = {}
-            model_metrics["rf"] = {}
-            model_metrics["rf"]['auc'] = 0.0
-            model_metrics["rf"]['acc'] = 0.0
-            model_metrics["rf"]['precision'] = 0.0
-            model_metrics["rf"]['recall'] = 0.0
-            model_metrics["rf"]['f1'] = 0.0
+            model_metrics[model_name] = {}
+            model_metrics[model_name]['auc'] = 0.0
+            model_metrics[model_name]['acc'] = 0.0
+            model_metrics[model_name]['precision'] = 0.0
+            model_metrics[model_name]['recall'] = 0.0
+            model_metrics[model_name]['f1'] = 0.0
 
             # calculate the metrics for all models
             for rst in data_splits.keys():
-                metric = getMetrics(data_splits[rst][3], data_splits[rst][1], model_res["rf"][rst][0], model_res["rf"][rst][1])
-                model_metrics["rf"]['auc'] += metric[0]
-                model_metrics["rf"]['acc'] += metric[1]
-                model_metrics["rf"]['precision'] += metric[2]
-                model_metrics["rf"]['recall'] += metric[3]
-                model_metrics["rf"]['f1'] += metric[4]
+                metric = getMetrics(data_splits[rst][3], data_splits[rst][1], model_res[model_name][rst][0], model_res[model_name][rst][1])
+                model_metrics[model_name]['auc'] += metric[0]
+                model_metrics[model_name]['acc'] += metric[1]
+                model_metrics[model_name]['precision'] += metric[2]
+                model_metrics[model_name]['recall'] += metric[3]
+                model_metrics[model_name]['f1'] += metric[4]
 
             # calculate the averages for each model
             model_averages = {}
-            model_averages["rf"] = {}
-            model_averages["rf"]['auc'] = model_metrics["rf"]['auc'] / len(data_splits)
-            model_averages["rf"]['acc'] = model_metrics["rf"]['acc'] / len(data_splits)
-            model_averages["rf"]['precision'] = model_metrics["rf"]['precision'] / len(data_splits)
-            model_averages["rf"]['recall'] = model_metrics["rf"]['recall'] / len(data_splits)
-            model_averages["rf"]['f1'] = model_metrics["rf"]['f1'] / len(data_splits)
+            model_averages[model_name] = {}
+            model_averages[model_name]['auc'] = model_metrics[model_name]['auc'] / len(data_splits)
+            model_averages[model_name]['acc'] = model_metrics[model_name]['acc'] / len(data_splits)
+            model_averages[model_name]['precision'] = model_metrics[model_name]['precision'] / len(data_splits)
+            model_averages[model_name]['recall'] = model_metrics[model_name]['recall'] / len(data_splits)
+            model_averages[model_name]['f1'] = model_metrics[model_name]['f1'] / len(data_splits)
+            
             print(k, model_averages)
-            file.write(f"Setting: {method}\nK: {k}\nResults: {model_averages}\n\n")
+            print(f"Setting: {method}\nK: {k}\nResults: {model_averages}\n\n")
+            row = [
+             method, k, model_averages[model_name]['auc'],
+             model_averages[model_name]['acc'],
+             model_averages[model_name]['precision'],
+             model_averages[model_name]['recall'],
+             model_averages[model_name]['f1']
+            ]
+            results.append(row)
+    df = pd.DataFrame(results, columns=["Method", "K", "AUC", "ACC", "Precision", "Recall", "F1"])
+
+    # Group data by Method
+    methods = df['Method'].unique()
+    metrics = ["AUC", "ACC", "Precision", "Recall", "F1"]
+
+    for metric in metrics:
+        plt.figure(figsize=(8, 5))
+        
+        for method in methods:
+            method_data = df[df['Method'] == method]
+            plt.plot(method_data["K"], method_data[metric], label=method, marker='o')
+
+        plt.title(f"{metric} vs K")
+        plt.xlabel("K")
+        plt.ylabel(metric)
+        plt.legend(title="Method")
+        plt.grid(True)
+        plt.tight_layout()
+        plt.show()
