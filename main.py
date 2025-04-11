@@ -7,6 +7,10 @@ from metrics import getMetrics
 import pandas as pd
 from metrics import interpret
 import matplotlib.pyplot as plt
+import pandas as pd
+import warnings
+
+warnings.filterwarnings("ignore", category=UserWarning)
 
 MODEL_LIST = ["dt", "rf", "gb", "xgb", "lgb", "et","ab", "lr", "lr1", "lr2", "lre", "lsv", "nlsv", "knn", "lda", "gnb", "mlp"]
 
@@ -39,6 +43,7 @@ def pipeline(data, selection=None, extraction=None, k=20):
         model_res["lda"][state] = models.model_linearDiscriminantAnalysis(*data_splits[state])
         model_res["gnb"][state] = models.model_gaussianNaiveBayes(*data_splits[state])
         model_res["mlp"][state] = models.model_multiLayerPerceptron(*data_splits[state])
+        print("Finished training models on round: " + state.astype(str))
 
     model_metrics = {}
     for model in MODEL_LIST:
@@ -90,8 +95,18 @@ def main():
 if __name__ == "__main__":
     # Rarefaction Dataset
     X, y = make_classification(n_samples=20, n_features=5, random_state=42)
-    data = np.concatenate((X, y.reshape(-1, 1)), axis = 1)
-    _ = pipeline(data)
+    test_data = np.concatenate((X, y.reshape(-1, 1)), axis = 1)
+
+    rarefaction_data = pd.read_csv("rarefied-feature-table-labeled.csv")
+    rarefaction_data = rarefaction_data.drop(columns=['Diagnosis'])
+    data_splits, model_res, model_metrics, model_averages, df_model_metrics, best_model_name = pipeline(rarefaction_data.iloc[:,1:].to_numpy())
+
+    for model in MODEL_LIST:
+        plt.bar(['auc', 'acc', 'precision', 'recall', 'f1'], np.array(list(model_averages[model].values())), color=np.random.rand(3,))
+        plt.xlabel("Metric")
+        plt.ylabel("Average (%)")
+        plt.title(model)
+        plt.show()
 
     # CLR 
     # X, y = make_classification(n_samples=20, n_features=5, random_state=42)
