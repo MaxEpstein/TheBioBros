@@ -126,3 +126,4 @@ def run_k_test(data, model_name, states, k_vals, title=""):
         plt.grid(True)
         plt.tight_layout()
         plt.show()
+    return df
