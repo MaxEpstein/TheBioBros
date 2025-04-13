@@ -80,6 +80,13 @@ def pipeline(data, selection=None, extraction=None, k=20, run_test=False):
 
     return data_splits, model_res, model_metrics, model_averages, df_model_metrics, best_model_name
 
+def createGraph(model):
+    plt.bar(['auc', 'acc', 'precision', 'recall', 'f1'], np.array(list(model_averages[model].values())), color=np.random.rand(3,))
+    plt.xlabel("Metric")
+    plt.ylabel("Average (%)")
+    plt.title(model)
+    plt.show()
+
 
 def main():
     # SHAP interpretability
@@ -102,11 +109,7 @@ if __name__ == "__main__":
     data_splits, model_res, model_metrics, model_averages, df_model_metrics, best_model_name = pipeline(rarefaction_data.iloc[:,1:].to_numpy())
 
     for model in MODEL_LIST:
-        plt.bar(['auc', 'acc', 'precision', 'recall', 'f1'], np.array(list(model_averages[model].values())), color=np.random.rand(3,))
-        plt.xlabel("Metric")
-        plt.ylabel("Average (%)")
-        plt.title(model)
-        plt.show()
+        createGraph(model)
 
     # CLR 
     # X, y = make_classification(n_samples=20, n_features=5, random_state=42)
