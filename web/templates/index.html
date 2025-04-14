@@ -31,11 +31,10 @@
                             aria-expanded="false" aria-label="Toggle navigation">
                             <span class="navbar-toggler-icon"></span>
                         </button>
-                        <form action="/action_page.php">
-                            <input type="file" id="myFile" name="filename">
+                        <form method="POST" action="/" enctype="multipart/form-data">
+                            <input type="file" id="myFile" name="filename" accept=".csv">
                             <input type="submit">
-                          </form>
-                        </div>
+                        </form>
                     </nav>
                 </div>
             </div>
@@ -43,9 +42,7 @@
             <div class="row tm-content-row tm-mt-big">
                 <div class="tm-col tm-col-small">
                     <div class="bg-white tm-block h-100">
-                        <h2 class="tm-block-title">Model Training</h2>
-                        Decision Tree <i class="fa fa-check-square"></i>
-                        Random Forest <i class="fa fa-spinner"></i>
+                        <h2 class="tm-block-title">Model Rankings</h2>
                         <canvas id="pieChart" class="chartjs-render-monitor"></canvas>
                     </div>
                 </div>
@@ -54,6 +51,22 @@
                         <h2 class="tm-block-title">Model Evaluation</h2>
                         <select name="cars" id="cars">
                             <option value="volvo">Decision Tree</option>
+                            <option value="volvo">Random Forest</option>
+                            <option value="volvo">Gradient Boosting</option>
+                            <option value="volvo">Extreme Gradient Boosting</option>
+                            <option value="volvo">Light Gradient Boosting</option>
+                            <option value="volvo">Extra Trees</option>
+                            <option value="volvo">AdaBoost</option>
+                            <option value="volvo">Logistic Regression</option>
+                            <option value="volvo">Lasso Regularization</option>
+                            <option value="volvo">Ridge Regularization</option>
+                            <option value="volvo">Elastic Net Regularization</option>
+                            <option value="volvo">Linear Support Vector</option>
+                            <option value="volvo">Non-Linear Support Vector</option>
+                            <option value="volvo">k-Nearest</option>
+                            <option value="volvo">Linear Discriminant</option>
+                            <option value="volvo">Gaussian Naive-Bayes</option>
+                            <option value="volvo">Multi-Layer Perception</option>
                           </select>
                         <canvas id="lineChart" class="chartjs-render-monitor"></canvas>
                     </div>
@@ -63,6 +76,22 @@
                         <h2 class="tm-block-title">Model Interpretation</h2>
                         <select name="cars" id="cars">
                             <option value="volvo">Decision Tree</option>
+                            <option value="volvo">Random Forest</option>
+                            <option value="volvo">Gradient Boosting</option>
+                            <option value="volvo">Extreme Gradient Boosting</option>
+                            <option value="volvo">Light Gradient Boosting</option>
+                            <option value="volvo">Extra Trees</option>
+                            <option value="volvo">AdaBoost</option>
+                            <option value="volvo">Logistic Regression</option>
+                            <option value="volvo">Lasso Regularization</option>
+                            <option value="volvo">Ridge Regularization</option>
+                            <option value="volvo">Elastic Net Regularization</option>
+                            <option value="volvo">Linear Support Vector</option>
+                            <option value="volvo">Non-Linear Support Vector</option>
+                            <option value="volvo">k-Nearest</option>
+                            <option value="volvo">Linear Discriminant</option>
+                            <option value="volvo">Gaussian Naive-Bayes</option>
+                            <option value="volvo">Multi-Layer Perception</option>
                           </select>
                         <canvas id="barChart"></canvas>
                     </div>
@@ -99,7 +128,6 @@
             updateChartOptions();
             drawLineChart(); // Line Chart
             drawBarChart(); // Bar Chart
-            drawPieChart(); // Pie Chart
             drawCalendar(); // Calendar
 
             $(window).resize(function () {
