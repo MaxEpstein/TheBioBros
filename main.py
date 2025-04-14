@@ -74,7 +74,7 @@ def pipeline(data, selection=None, extraction=None, k=20, create_metric_plots=Tr
     
     df_model_metrics = pd.DataFrame.from_dict(model_averages, orient='index')
     print(df_model_metrics)
-    auc_sort_dec = df_model_metrics['auc'].argsort()[::-1].index.to_list()
+    auc_sort_dec = df_model_metrics['auc'].to_numpy().argsort()[::-1]
     model_auc_dec = df_model_metrics.iloc[auc_sort_dec].index.to_list()
     best_model_name = model_auc_dec[0]
     print(f"Best Model (by ROC AUC): {best_model_name}")
