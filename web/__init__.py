@@ -1,30 +1,24 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
+import csv, io
+from main import pipeline
+import pandas as pd
 
 app = Flask(__name__)
 
-@app.route("/")
+@app.route("/", methods=['GET', 'POST'])
 def hello_world():
+    if request.method == 'POST':
+        file = request.files['filename']
+        if file:
+            df = pd.read_csv(file)
+            print(df.head())
+            df = df.drop(columns = ['Diagnosis'])
+            _, _, _, _, _, model_name = pipeline(df.iloc[:,1:].to_numpy())
+            print(model_name)
+        return render_template('index.html')
+    if request.method == 'GET':
+        return render_template('index.html')
     return render_template('index.html')
-
-@app.route("/accounts")
-def hello_accounts():
-    return render_template('accounts.html')
-
-@app.route("/add")
-def hello_add():
-    return render_template('add-product.html')
-
-@app.route("/edit")
-def hello_edit():
-    return render_template('edit-product.html')
-
-@app.route("/login")
-def hello_login():
-    return render_template('login.html')
-
-@app.route("/products")
-def hello_products():
-    return render_template('products.html')
 
 if __name__ == "__gui__":
     app.run(debug=True)
