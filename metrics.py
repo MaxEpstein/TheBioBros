@@ -11,6 +11,9 @@
 from sklearn.metrics import roc_auc_score, accuracy_score, precision_score, recall_score, f1_score
 import shap
 import numpy as np
+import base64
+import io
+import matplotlib.pyplot as plt
 
 
 def getMetrics(y_test, x_test, y_pred, model):
@@ -27,6 +30,7 @@ def getMetrics(y_test, x_test, y_pred, model):
 def interpret(list_of_models, list_of_splits, model_results):
     # From a list of models and train-test splits,
     # generates the average SHAP values for each feature.
+    plot_dict = {}
     linear = ["lr", "lr1", "lr2", "lre", "lsv"]
     tree = ["xgb", "lgb", "et", "gb", "dt", "rf"] 
     not_supported = ["ab", "nlsv", "knn", "lda", "gnb", "mlp"]
@@ -38,6 +42,7 @@ def interpret(list_of_models, list_of_splits, model_results):
 
         if model_name in not_supported:
             print(f"{model_name} is not supported")
+            plot_dict[model_name] = 'unsupported'
             continue
 
         for state in list_of_splits.keys():
@@ -68,9 +73,16 @@ def interpret(list_of_models, list_of_splits, model_results):
             data=X_test,
             feature_names=feature_names
         )
-
+        buff = io.BytesIO()
         shap.summary_plot(summary_explanation, 
                           plot_type="dot", 
-                          max_display=5, 
-                          color_bar_label='Microbiome Test'
+                          max_display=10, 
+                          color_bar_label='Microbiome Test',
+                          show=False
         )
+        plt.savefig(buff, format='jpg')
+        buff.seek(0)
+        plot_base64 = str(base64.b64encode(buff.read()).decode())
+        plot_dict[model_name] = plot_base64
+
+    return plot_dict
