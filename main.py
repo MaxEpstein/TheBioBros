@@ -89,7 +89,7 @@ def pipeline(data, selection=None, extraction=None, k=20, num_repeats=100, creat
 
         roc_plot_dict = plot_avg_roc_base64(model_metrics, model_auc_dec)
         for model in model_auc_dec:
-            plot_dict[model]['roc_auc'] = roc_plot_dict[model]
+            plot_dict[model]['roc_plot'] = roc_plot_dict[model]
 
     if create_interpret_plot:
         interpret(model_auc_dec, data_splits, model_res, plot_dict) # Store as base64 so we can later send to front end
