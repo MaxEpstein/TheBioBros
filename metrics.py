@@ -8,7 +8,7 @@
 # Interpretability Metrics:
     # SHAP
 
-from sklearn.metrics import roc_auc_score, accuracy_score, precision_score, recall_score, f1_score
+from sklearn.metrics import roc_auc_score, accuracy_score, precision_score, recall_score, f1_score, roc_curve
 import shap
 import numpy as np
 import base64
@@ -25,7 +25,8 @@ def getMetrics(y_test, x_test, y_pred, model):
     precision = precision_score(y_test, y_pred)
     recall = recall_score(y_test, y_pred)
     f1 = f1_score(y_test, y_pred)
-    return  areaUnder, accuracy, precision, recall, f1
+    fpr, tpr, _ = roc_curve(y_test, y_prob)
+    return  areaUnder, accuracy, precision, recall, f1, fpr, tpr
 
 def interpret(list_of_models, list_of_splits, model_results, dictionary):
     # From a list of models and train-test splits,
