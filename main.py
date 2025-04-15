@@ -15,12 +15,11 @@ warnings.filterwarnings("ignore", category=UserWarning)
 
 MODEL_LIST = ["dt", "rf", "gb", "xgb", "lgb", "et","ab", "lr", "lr1", "lr2", "lre", "lsv", "nlsv", "knn", "lda", "gnb", "mlp"]
 
-def pipeline(data, selection=None, extraction=None, k=20, create_metric_plots=True, create_interpret_plot=False, run_test=False):
+def pipeline(data, selection=None, extraction=None, k=20, num_repeats=100, create_metric_plots=True, create_interpret_plot=False, run_test=False):
     np.random.seed(42)
-    states = np.random.randint(low = 0, high = 1000000, size=(100,))
+    states = np.random.randint(low = 0, high = 1000000, size=(num_repeats,))
     data_splits = {}
-    metric_plot_dict = {}
-    interpret_plot_dict = None
+    plot_dict = {}
     for rst in states:
         data_splits[rst] = preprocess.preprocess(data, rst, selection=selection, extraction=extraction, k=k) # TODO: figure out about k
     
@@ -78,19 +77,22 @@ def pipeline(data, selection=None, extraction=None, k=20, create_metric_plots=Tr
     model_auc_dec = df_model_metrics.iloc[auc_sort_dec].index.to_list()
     best_model_name = model_auc_dec[0]
     print(f"Best Model (by ROC AUC): {best_model_name}")
+    for model in model_auc_dec:
+        plot_dict[model] = {}
+
     if create_metric_plots:
         for model in model_auc_dec:
             plot_b64 = createGraph(model, model_averages) # Store as base64 so we can later send to front end
-            metric_plot_dict[model] = plot_b64
+            plot_dict[model]['metrics'] = plot_b64
 
     if create_interpret_plot:
-        interpret_plot_dict = interpret(model_auc_dec, data_splits, model_res) # Store as base64 so we can later send to front end
+        interpret(model_auc_dec, data_splits, model_res, plot_dict) # Store as base64 so we can later send to front end
 
     if run_test:
         k_vals = [1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200]
         results = run_k_test(data, best_model_name, states=states, k_vals=k_vals)
 
-    return data_splits, model_res, model_metrics, model_averages, df_model_metrics, best_model_name, metric_plot_dict, interpret_plot_dict, model_auc_dec
+    return data_splits, model_res, model_metrics, model_averages, df_model_metrics, best_model_name, plot_dict, model_auc_dec
 
 def createGraph(model_name, metrics):
     buff = io.BytesIO()
@@ -99,6 +101,7 @@ def createGraph(model_name, metrics):
     plt.ylabel("Average (%)")
     plt.title(f'{model_name.capitalize()} Average Metrics')
     plt.savefig(buff, format='jpg')
+    plt.close()
     buff.seek(0)
     plot_base64 = str(base64.b64encode(buff.read()).decode())
     return plot_base64
@@ -106,11 +109,11 @@ def createGraph(model_name, metrics):
 if __name__ == "__main__":
     # Rarefaction
     rarefaction_data = pd.read_csv("rarefied-feature-table-labeled.csv")
-    rare_data_splits, rare_model_res, rare_model_metrics, rare_model_averages,rare_df_model_metrics, rare_best_model_name, rare_metric_plot_dict, rare_interpret_plot_dict, rare_model_auc_dec = pipeline(rarefaction_data.iloc[:,1:].to_numpy())
+    rare_data_splits, rare_model_res, rare_model_metrics, rare_model_averages,rare_df_model_metrics, rare_best_model_name, rare_plot_dict, rare_model_auc_dec = pipeline(rarefaction_data.iloc[:,1:].to_numpy())
 
     # CLR 
     clr_data = pd.read_csv("reduced-clr-feature-table-labeled.csv")
-    clr_data_splits, clr_model_res, clr_model_metrics, clr_model_averages, clr_df_model_metrics, clr_best_model_name, clr_metric_plot_dict, clr_interpret_plot_dict, clr_model_auc_dec = pipeline(clr_data.iloc[:,1:].to_numpy())
+    clr_data_splits, clr_model_res, clr_model_metrics, clr_model_averages, clr_df_model_metrics, clr_best_model_name, clr_plot_dict, clr_model_auc_dec = pipeline(clr_data.iloc[:,1:].to_numpy())
 
     # ensemble = models.ensemble_model([model_info[1][1] for model_info in rare_model_res[rare_best_model_name].items()],
     #                                  [model_info[1][1] for model_info in clr_model_res[clr_best_model_name].items()])
