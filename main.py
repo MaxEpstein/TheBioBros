@@ -15,7 +15,7 @@ warnings.filterwarnings("ignore", category=UserWarning)
 
 MODEL_LIST = ["dt", "rf", "gb", "xgb", "lgb", "et","ab", "lr", "lr1", "lr2", "lre", "lsv", "nlsv", "knn", "lda", "gnb", "mlp"]
 
-def pipeline(data, selection=None, extraction=None, k=20, num_repeats=100, create_metric_plots=True, create_interpret_plot=False, run_test=False):
+def pipeline(data, selection=None, extraction=None, k=20, num_repeats=100, feature_names=None, create_metric_plots=True, create_interpret_plot=False, run_test=False):
     np.random.seed(42)
     states = np.random.randint(low = 0, high = 1000000, size=(num_repeats,))
     data_splits = {}
@@ -92,7 +92,7 @@ def pipeline(data, selection=None, extraction=None, k=20, num_repeats=100, creat
             plot_dict[model]['roc_plot'] = roc_plot_dict[model]
 
     if create_interpret_plot:
-        interpret(model_auc_dec, data_splits, model_res, plot_dict) # Store as base64 so we can later send to front end
+        interpret(model_auc_dec, data_splits, model_res, plot_dict, feature_names) # Store as base64 so we can later send to front end
 
     if run_test:
         k_vals = [1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200]
@@ -162,7 +162,7 @@ def createGraph(model_name, metrics):
 if __name__ == "__main__":
     # Rarefaction
     rarefaction_data = pd.read_csv("rarefied-feature-table-labeled.csv")
-    rare_data_splits, rare_model_res, rare_model_metrics, rare_model_averages,rare_df_model_metrics, rare_best_model_name, rare_plot_dict, rare_model_auc_dec = pipeline(rarefaction_data.iloc[:,1:].to_numpy())
+    rare_data_splits, rare_model_res, rare_model_metrics, rare_model_averages,rare_df_model_metrics, rare_best_model_name, rare_plot_dict, rare_model_auc_dec = pipeline(rarefaction_data.iloc[:,1:].to_numpy(), feature_names=rarefaction_data.iloc[:,1:-1].columns.tolist())
 
     # CLR 
     clr_data = pd.read_csv("reduced-clr-feature-table-labeled.csv")
