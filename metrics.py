@@ -8,9 +8,12 @@
 # Interpretability Metrics:
     # SHAP
 
-from sklearn.metrics import roc_auc_score, accuracy_score, precision_score, recall_score, f1_score
+from sklearn.metrics import roc_auc_score, accuracy_score, precision_score, recall_score, f1_score, roc_curve
 import shap
 import numpy as np
+import base64
+import io
+import matplotlib.pyplot as plt
 
 
 def getMetrics(y_test, x_test, y_pred, model):
@@ -22,11 +25,13 @@ def getMetrics(y_test, x_test, y_pred, model):
     precision = precision_score(y_test, y_pred)
     recall = recall_score(y_test, y_pred)
     f1 = f1_score(y_test, y_pred)
-    return  areaUnder, accuracy, precision, recall, f1
+    fpr, tpr, _ = roc_curve(y_test, y_prob)
+    return  areaUnder, accuracy, precision, recall, f1, fpr, tpr
 
-def interpret(list_of_models, list_of_splits, model_results):
+def interpret(list_of_models, list_of_splits, model_results, dictionary):
     # From a list of models and train-test splits,
     # generates the average SHAP values for each feature.
+
     linear = ["lr", "lr1", "lr2", "lre", "lsv"]
     tree = ["xgb", "lgb", "et", "gb", "dt", "rf"] 
     not_supported = ["ab", "nlsv", "knn", "lda", "gnb", "mlp"]
@@ -38,6 +43,7 @@ def interpret(list_of_models, list_of_splits, model_results):
 
         if model_name in not_supported:
             print(f"{model_name} is not supported")
+            dictionary[model_name]['interpret'] = 'unsupported'
             continue
 
         for state in list_of_splits.keys():
@@ -68,9 +74,15 @@ def interpret(list_of_models, list_of_splits, model_results):
             data=X_test,
             feature_names=feature_names
         )
-
+        buff = io.BytesIO()
         shap.summary_plot(summary_explanation, 
                           plot_type="dot", 
-                          max_display=5, 
-                          color_bar_label='Microbiome Test'
+                          max_display=10, 
+                          color_bar_label='Microbiome Test',
+                          show=False
         )
+        plt.savefig(buff, format='jpg')
+        plt.close()
+        buff.seek(0)
+        plot_base64 = str(base64.b64encode(buff.read()).decode())
+        dictionary[model_name]['interpret'] = plot_base64

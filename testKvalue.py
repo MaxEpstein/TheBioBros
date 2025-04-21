@@ -122,8 +122,11 @@ def run_k_test(data, model_name, states, k_vals, title=""):
         plt.title(f"{metric} vs K")
         plt.xlabel("K")
         plt.ylabel(metric)
-        plt.legend(title="Method")
+        plt.legend(title="Method", bbox_to_anchor=(1.05, 1), loc='upper left')
         plt.grid(True)
         plt.tight_layout()
+        plt.savefig(f'{title}_{metric}_vs_k', format='jpg')
         plt.show()
+        plt.close()
+    df.to_csv(f'{title}_results.csv')
     return df
