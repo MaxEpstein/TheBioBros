@@ -1,11 +1,14 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
 <script>
-    const rare_metrics = JSON.parse('{{ rare_metrics | tojson }}');
-    const rare_interpret = JSON.parse('{{ rare_interpret | tojson }}');
-    const clr_metrics = JSON.parse('{{ clr_metrics | tojson }}');
-    const clr_interpret = JSON.parse('{{ clr_interpret | tojson }}');
+    const rare_plot = JSON.parse('{{ rare_plot | tojson }}');
+    const clr_plot = JSON.parse('{{ clr_plot | tojson }}');
+    const rare_model_name = JSON.parse('{{ rare_model_name | tojson }}');
+    const clr_model_name = JSON.parse('{{ clr_model_name | tojson }}');
+    document.getElementById("text1").textContent = 
+        `The best model, based on AUC, is ${dict[rare_model_name]}`;
 </script>
 
 <head>
@@ -46,12 +49,18 @@
                     </nav>
                 </div>
             </div>
+            <div class="tab">
+                <button class="tablinks" onclick="openCity(event, 'Rare')">Rarefaction</button>
+                <button class="tablinks" onclick="openCity(event, 'CLR')">CLR</button>
+                <button class="tablinks" onclick="openCity(event, 'Test')">Predictions</button>
+              </div>
             <!-- row -->
+            <div id="Rare" class="tabcontent">
             <div class="row tm-content-row tm-mt-big">
                 <div class="tm-col tm-col">
                     <div class="bg-white tm-block h-100">
                         <h2 class="tm-block-title">Rarefaction Model Evaluation</h2>
-                        <h6 class="tm-title">The best model is {{rare_model_name}}</h6>
+                        <h6 class="tm-title" id="text1">The best model, based on AUC, is {{rare_model_name}}</h6>
                         <select name="cars" id="cars" onchange="myFunction1(this.value)">
                             <option value="best">Best Model</option>
                             <option value="dt">Decision Tree</option>
@@ -72,13 +81,13 @@
                             <option value="gnb">Gaussian Naive-Bayes</option>
                             <option value="mlp">Multi-Layer Perception</option>
                           </select>
-                          <img id="model1" src="data:image/png;base64, {{rare_metrics[rare_model_name]}}" alt="Red dot" />
+                          <img id="model1" src="data:image/png;base64, {{rare_plot[rare_model]['metrics']}}" alt="Red dot" />
                     </div>
                 </div>
                 <div class="tm-col tm-col">
                     <div class="bg-white tm-block h-100">
                         <h2 class="tm-block-title">Rarefaction Model Interpretation</h2>
-                        <h6 class="tm-title">The best model is {{rare_model_name}}</h6>
+                        <h6 class="tm-title">The best model, based on AUC, is {{rare_model_name}}</h6>
                         <select name="cars" id="cars" onchange="myFunction2(this.value)">
                             <option value="best">Best Model</option>
                             <option value="dt">Decision Tree</option>
@@ -99,16 +108,45 @@
                             <option value="gnb">Gaussian Naive-Bayes</option>
                             <option value="mlp">Multi-Layer Perception</option>
                           </select>
-                          <img id="model2" src="data:image/png;base64, {{rare_interpret[rare_model_name]}}" alt="Red dot" />
+                          <img id="model2" src="data:image/png;base64, {{rare_plot[rare_model]['interpret']}}" alt="Red dot" />
                         <canvas id="barChart"></canvas>
                     </div>
                 </div>
+                <div class="tm-col tm-col">
+                    <div class="bg-white tm-block h-100">
+                        <h2 class="tm-block-title">Rarefaction AUC/ROC Plots</h2>
+                        <h6 class="tm-title">The best model, based on AUC, is {{rare_model_name}}</h6>
+                        <select name="cars" id="cars" onchange="myFunction5(this.value)">
+                            <option value="best">Best Model</option>
+                            <option value="dt">Decision Tree</option>
+                            <option value="rf">Random Forest</option>
+                            <option value="gb">Gradient Boosting</option>
+                            <option value="xgb">Extreme Gradient Boosting</option>
+                            <option value="lgb">Light Gradient Boosting</option>
+                            <option value="et">Extra Trees</option>
+                            <option value="ab">AdaBoost</option>
+                            <option value="lr">Logistic Regression</option>
+                            <option value="lr1">Lasso Regularization</option>
+                            <option value="lr2">Ridge Regularization</option>
+                            <option value="lre">Elastic Net Regularization</option>
+                            <option value="lsv">Linear Support Vector</option>
+                            <option value="nlsv">Non-Linear Support Vector</option>
+                            <option value="knn">k-Nearest</option>
+                            <option value="lda">Linear Discriminant</option>
+                            <option value="gnb">Gaussian Naive-Bayes</option>
+                            <option value="mlp">Multi-Layer Perception</option>
+                          </select>
+                          <img id="model5" src="data:image/png;base64, {{rare_plot[rare_model]['roc_plot']}}" alt="Red dot" />
+                    </div>
+                </div>
             </div>
+            </div>
+            <div id="CLR" class="tabcontent">
             <div class="row tm-content-row tm-mt-big">
                 <div class="tm-col tm-col">
                     <div class="bg-white tm-block h-100">
                         <h2 class="tm-block-title">CLR Model Evaluation</h2>
-                        <h6 class="tm-title">The best model is {{clr_model_name}}</h6>
+                        <h6 class="tm-title">The best model, based on AUC, is {{clr_model_name}}</h6>
                         <select name="cars" id="cars" onchange="myFunction3(this.value)">
                             <option value="best">Best Model</option>
                             <option value="dt">Decision Tree</option>
@@ -129,14 +167,14 @@
                             <option value="gnb">Gaussian Naive-Bayes</option>
                             <option value="mlp">Multi-Layer Perception</option>
                           </select>
-                          <img id="model3" src="data:image/png;base64, {{clr_metrics[clr_model_name]}}" alt="Red dot" />
+                          <img id="model3" src="data:image/png;base64, {{clr_plot[clr_model]['metrics']}}" alt="Red dot" />
                         <canvas id="lineChart" class="chartjs-render-monitor"></canvas>
                     </div>
                 </div>
                 <div class="tm-col tm-col">
                     <div class="bg-white tm-block h-100">
                         <h2 class="tm-block-title">CLR Model Interpretation</h2>
-                        <h6 class="tm-title">The best model is {{clr_model_name}}</h6>
+                        <h6 class="tm-title">The best model, based on AUC, is {{clr_model_name}}</h6>
                         <select name="cars" id="cars" onchange="myFunction4(this.value)">
                             <option value="best">Best Model</option>
                             <option value="dt">Decision Tree</option>
@@ -157,10 +195,41 @@
                             <option value="gnb">Gaussian Naive-Bayes</option>
                             <option value="mlp">Multi-Layer Perception</option>
                           </select>
-                          <img id="model4" src="data:image/png;base64, {{clr_interpret[clr_model_name]}}" alt="Red dot" />
+                          <img id="model4" src="data:image/png;base64, {{clr_plot[clr_model]['interpret']}}" alt="Red dot" />
                         <canvas id="barChart"></canvas>
                     </div>
                 </div>
+                <div class="tm-col tm-col">
+                    <div class="bg-white tm-block h-100">
+                        <h2 class="tm-block-title">CLR AUC/ROC Plots</h2>
+                        <h6 class="tm-title">The best model, based on AUC, is {{clr_model_name}}</h6>
+                        <select name="cars" id="cars" onchange="myFunction6(this.value)">
+                            <option value="best">Best Model</option>
+                            <option value="dt">Decision Tree</option>
+                            <option value="rf">Random Forest</option>
+                            <option value="gb">Gradient Boosting</option>
+                            <option value="xgb">Extreme Gradient Boosting</option>
+                            <option value="lgb">Light Gradient Boosting</option>
+                            <option value="et">Extra Trees</option>
+                            <option value="ab">AdaBoost</option>
+                            <option value="lr">Logistic Regression</option>
+                            <option value="lr1">Lasso Regularization</option>
+                            <option value="lr2">Ridge Regularization</option>
+                            <option value="lre">Elastic Net Regularization</option>
+                            <option value="lsv">Linear Support Vector</option>
+                            <option value="nlsv">Non-Linear Support Vector</option>
+                            <option value="knn">k-Nearest</option>
+                            <option value="lda">Linear Discriminant</option>
+                            <option value="gnb">Gaussian Naive-Bayes</option>
+                            <option value="mlp">Multi-Layer Perception</option>
+                          </select>
+                          <img id="model6" src="data:image/png;base64, {{clr_plot[clr_model]['roc_plot']}}" alt="Red dot" />
+                    </div>
+                </div>
+            </div>
+            </div>
+            <div id="Test" class="tabcontent">
+
             </div>
         </div>
     </div>
@@ -205,20 +274,66 @@
     </script>
     <script>
         function myFunction1(val) {
-            document.getElementById("model1").src = "data:image/png;base64," + rare_metrics[val];
+            if (val == "best")
+                document.getElementById("model1").src = "data:image/png;base64," + rare_plot[rare_model]['metrics'];
+            else
+                document.getElementById("model1").src = "data:image/png;base64," + rare_plot[val]['metrics'];
             console.error("No image data for:", val);
         }
         function myFunction2(val) {
-            document.getElementById("model2").src = "data:image/png;base64," + rare_interpret[val];
+            if (val == "best")
+                document.getElementById("model2").src = "data:image/png;base64," + rare_plot[rare_model]['interpret'];
+            else
+                document.getElementById("model2").src = "data:image/png;base64," + rare_plot[val]['interpret'];
             console.error("No image data for:", val);
         }
         function myFunction3(val) {
-            document.getElementById("model3").src = "data:image/png;base64," + clr_metrics[val];
+            if (val == "best")
+                document.getElementById("model3").src = "data:image/png;base64," + clr_plot[clr_model]['metrics'];
+            else
+                document.getElementById("model3").src = "data:image/png;base64," + clr_plot[val]['metrics'];
             console.error("No image data for:", val);
         }
         function myFunction4(val) {
-            document.getElementById("model4").src = "data:image/png;base64," + clr_interpret[val];
+            if (val == "best")
+                document.getElementById("model4").src = "data:image/png;base64," + clr_plot[clr_model]['interpret'];
+            else
+                document.getElementById("model4").src = "data:image/png;base64," + clr_plot[val]['interpret'];
             console.error("No image data for:", val);
+        }
+        function myFunction5(val) {
+            if (val == "best")
+                document.getElementById("model5").src = "data:image/png;base64," + rare_plot[rare_model]['roc_plot'];
+            else
+                document.getElementById("model5").src = "data:image/png;base64," + rare_plot[val]['roc_plot'];
+            console.error("No image data for:", val);
+        }
+        function myFunction6(val) {
+            if (val == "best")
+                document.getElementById("model6").src = "data:image/png;base64," + clr_plot[clr_model]['roc_plot'];
+            else
+                document.getElementById("model6").src = "data:image/png;base64," + clr_plot[val]['roc_plot'];
+            console.error("No image data for:", val);
+        }
+        function openCity(evt, cityName) {
+            // Declare all variables
+            var i, tabcontent, tablinks;
+
+            // Get all elements with class="tabcontent" and hide them
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+
+            // Get all elements with class="tablinks" and remove the class "active"
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+
+            // Show the current tab, and add an "active" class to the button that opened the tab
+            document.getElementById(cityName).style.display = "block";
+            evt.currentTarget.className += " active";
         }
     </script>
 </body>

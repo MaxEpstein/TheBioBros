@@ -13,22 +13,41 @@ def hello_world():
     if request.method == 'POST':
         rare = request.files['filerare']
         clr = request.files['fileclr']
+        model_dict = {
+        'dt': 'Decision Tree',
+        'gb': 'Gradient Boosting',
+        'rf': 'Random Forest',
+        'xgb': 'Extreme Gradient Boosting',
+        'lgb': 'Light Gradient Boosting',
+        'et': 'Extra Trees',
+        'ab': 'AdaBoost',
+        'lr': 'Logistic Regression',
+        'lr1': 'Lasso Regularization',
+        'lr2': 'Ridge Regularization',
+        'lre': 'Elastic Net Regularization',
+        'lsv': 'Linear Support Vector',
+        'nlsv': 'Non-Linear Support Vector',
+        'knn': 'k-Nearest Neighbor',
+        'lda': 'Linear Discriminant',
+        'gnb': 'Gaussian Naive-Bayes',
+        'mlp': 'Multi-Layer Perception'
+        }
         if rare:
             df = pd.read_csv(rare)
             print(df.head())
             df = df.drop(columns = ['Diagnosis'])
-            _, _, _, _, _, rare_model_name, rare_metrics, rare_interpret, rare_list = pipeline(df.iloc[:,1:].to_numpy())
+            _, _, _, _, _, rare_model_name, rare_plot, rare_list = pipeline(df.iloc[:,1:].to_numpy())
             print(rare_model_name)
-            rare_image_metrics = rare_metrics
+            rare_image_metrics = rare_plot
         if clr:
             df = pd.read_csv(clr)
             print(df.head())
             df = df.drop(columns = ['Diagnosis'])
-            _, _, _, _, _, clr_model_name, clr_metrics, clr_interpret, clr_list = pipeline(df.iloc[:,1:].to_numpy())
+            _, _, _, _, _, clr_model_name, clr_plot, clr_list = pipeline(df.iloc[:,1:].to_numpy())
             print(clr_model_name)
-        return render_template('submitted.html', rare_model_name=rare_model_name, clr_model_name=clr_model_name,
-                               rare_metrics=rare_metrics, rare_interpret=rare_interpret, rare_list=rare_list, 
-                               clr_metrics=clr_metrics, clr_interpret=clr_interpret, clr_list=clr_list)
+        return render_template('submitted.html', rare_model_name=model_dict[rare_model_name], clr_model_name=model_dict[clr_model_name],
+                               rare_plot=rare_plot, rare_list=rare_list, rare_model=rare_model_name,
+                               clr_plot=clr_plot, clr_list=clr_list, clr_model=clr_model_name)
     if request.method == 'GET':
         return render_template('index.html')
     return render_template('index.html')
