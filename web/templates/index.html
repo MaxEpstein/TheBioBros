@@ -41,6 +41,11 @@
             </div>
             <!-- row -->
             <div class="row tm-content-row tm-mt-big">
+                <div class="tm-col tm-col">
+                    <div class="bg-white tm-block h-100">
+                        <h6 class="tm-title" id="text1">Input the Rarefaction preprocessed dataset on the left, and the CLR dataset on the right.</h6>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -57,36 +62,14 @@
     <!-- https://getbootstrap.com/ -->
     <script src="{{ url_for('static', filename='js/tooplate-scripts.js') }}"></script>
     <script>
-        let ctxLine,
-            ctxBar,
-            ctxPie,
-            optionsLine,
-            optionsBar,
-            optionsPie,
-            configLine,
-            configBar,
-            configPie,
-            lineChart;
-        barChart, pieChart;
-        // DOM is ready
         $(function () {
-            updateChartOptions();
-            drawLineChart(); // Line Chart
-            drawBarChart(); // Bar Chart
-            drawCalendar(); // Calendar
 
             $(window).resize(function () {
-                updateChartOptions();
-                updateLineChart();
-                updateBarChart();
                 reloadPage();
             });
         })
     </script>
     <script>
-        function myFunction(val) {
-            document.getElementById("model1").innerHTML = val;
-        }
     </script>
 </body>
 </html>

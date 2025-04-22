@@ -6,7 +6,9 @@
     const rare_plot = JSON.parse('{{ rare_plot | tojson }}');
     const clr_plot = JSON.parse('{{ clr_plot | tojson }}');
     const rare_model_name = JSON.parse('{{ rare_model_name | tojson }}');
+    const rare_model = JSON.parse('{{ rare_model | tojson }}');
     const clr_model_name = JSON.parse('{{ clr_model_name | tojson }}');
+    const clr_model = JSON.parse('{{ clr_model | tojson }}');
     document.getElementById("text1").textContent = 
         `The best model, based on AUC, is ${dict[rare_model_name]}`;
 </script>
@@ -52,7 +54,7 @@
             <div class="tab">
                 <button class="tablinks" onclick="openCity(event, 'Rare')">Rarefaction</button>
                 <button class="tablinks" onclick="openCity(event, 'CLR')">CLR</button>
-                <button class="tablinks" onclick="openCity(event, 'Test')">Predictions</button>
+                <button class="tablinks" onclick="openCity(event, 'FS')">Feature Selection</button>
               </div>
             <!-- row -->
             <div id="Rare" class="tabcontent">
@@ -228,8 +230,27 @@
                 </div>
             </div>
             </div>
-            <div id="Test" class="tabcontent">
-
+            <div id="FS" class="tabcontent">
+                <div class="row tm-content-row tm-mt-big">
+                    <div class="tm-col tm-col">
+                        <div class="bg-white tm-block h-100">
+                            <h2 class="tm-block-title">Feature Selection Plots</h2>
+                            <select name="cars" id="m1" onchange="myFunction7()">
+                                <option value="r">Rarefaction</option>
+                                <option value="c">CLR</option>
+                              </select>
+                              <select name="cars" id="m2" onchange="myFunction7()">
+                                <option value="acc">ACC</option>
+                                <option value="auc">AUC</option>
+                                <option value="f">F1</option>
+                                <option value="p">Precision</option>
+                                <option value="r">Recall</option>
+                              </select>
+                              <img id="model7" style="width: 55vw; min-width: 330px;" src="{{ url_for('static', filename='img/rare_k_plots/rare_ACC_vs_k.jpg') }}"Red dot" />
+                            <canvas id="lineChart" class="chartjs-render-monitor"></canvas>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -246,28 +267,9 @@
     <!-- https://getbootstrap.com/ -->
     <script src="{{ url_for('static', filename='js/tooplate-scripts.js') }}"></script>
     <script>
-        let ctxLine,
-            ctxBar,
-            ctxPie,
-            optionsLine,
-            optionsBar,
-            optionsPie,
-            configLine,
-            configBar,
-            configPie,
-            lineChart;
-        barChart, pieChart;
-        // DOM is ready
         $(function () {
-            updateChartOptions();
-            drawLineChart(); // Line Chart
-            drawBarChart(); // Bar Chart
-            drawCalendar(); // Calendar
 
             $(window).resize(function () {
-                updateChartOptions();
-                updateLineChart();
-                updateBarChart();
                 reloadPage();
             });
         })
@@ -314,6 +316,32 @@
             else
                 document.getElementById("model6").src = "data:image/png;base64," + clr_plot[val]['roc_plot'];
             console.error("No image data for:", val);
+        }
+        function myFunction7() {
+            var value1 = document.getElementById("m1").value;
+            var value2 = document.getElementById("m2").value;
+            if (value1 == "r")
+                if (value2 == "acc")
+                    document.getElementById("model7").src = "../static/img/rare_k_plots/rare_ACC_vs_k.jpg";
+                else if (value2 == "auc")
+                    document.getElementById("model7").src = "../static/img/rare_k_plots/rare_AUC_vs_k.jpg";
+                else if (value2 == "f")
+                    document.getElementById("model7").src = "../static/img/rare_k_plots/rare_F1_vs_k.jpg";
+                else if (value2 == "p")
+                    document.getElementById("model7").src = "../static/img/rare_k_plots/rare_Precision_vs_k.jpg";
+                else
+                    document.getElementById("model7").src = "../static/img/rare_k_plots/rare_Recall_vs_k.jpg";
+            else
+                if (value2 == "acc")
+                    document.getElementById("model7").src = "../static/img/clr_k_plots/clr_ACC_vs_k.jpg";
+                else if (value2 == "auc")
+                    document.getElementById("model7").src = "../static/img/clr_k_plots/clr_AUC_vs_k.jpg";
+                else if (value2 == "f")
+                    document.getElementById("model7").src = "../static/img/clr_k_plots/clr_F1_vs_k.jpg";
+                else if (value2 == "p")
+                    document.getElementById("model7").src = "../static/img/clr_k_plots/clr_Precision_vs_k.jpg";
+                else
+                    document.getElementById("model7").src = "../static/img/clr_k_plots/clr_Recall_vs_k.jpg";
         }
         function openCity(evt, cityName) {
             // Declare all variables
