@@ -6,7 +6,7 @@ app = Flask(__name__)
 
 @app.route("/", methods=['GET', 'POST'])
 def run_app():
-    if request.method == 'POST':
+    if request.method == 'POST': # Logic when uploading files
         rare = request.files['filerare']
         clr = request.files['fileclr']
         model_dict = {
@@ -26,20 +26,21 @@ def run_app():
         'knn': 'k-Nearest Neighbor',
         'lda': 'Linear Discriminant',
         'gnb': 'Gaussian Naive-Bayes',
-        'mlp': 'Multi-Layer Perception'
-        }
+        'mlp': 'Multi-Layer Perceptron'
+        } # Used to convert codes into understandable names
         if rare:
-            df = pd.read_csv(rare)
-            _, _, _, _, _, rare_model_name, rare_plot, rare_list = pipeline(df.iloc[:,1:].to_numpy(), feature_names=df.iloc[:,1:-1].columns.tolist())
+            df = pd.read_csv(rare) # Read and train on rarefaction dataset
+            _, _, _, _, best_rare_model, rare_plot, rare_list = pipeline(df.iloc[:,1:].to_numpy(), feature_names=df.iloc[:,1:-1].columns.tolist(), create_interpret_plot=True, num_repeats=1, run_test=True)
         if clr:
-            df = pd.read_csv(clr)
-            _, _, _, _, _, clr_model_name, clr_plot, clr_list = pipeline(df.iloc[:,1:].to_numpy(), feature_names=df.iloc[:,1:-1].columns.tolist())
-        return render_template('submitted.html', rare_model_name=model_dict[rare_model_name], clr_model_name=model_dict[clr_model_name],
-                               rare_plot=rare_plot, rare_list=rare_list, rare_model=rare_model_name,
-                               clr_plot=clr_plot, clr_list=clr_list, clr_model=clr_model_name, model_dict=model_dict)
+            df = pd.read_csv(clr) # Read and train on CLR dataset 
+            _, _, _, _, best_clr_model, clr_plot, clr_list = pipeline(df.iloc[:,1:].to_numpy(), feature_names=df.iloc[:,1:-1].columns.tolist(), create_interpret_plot=True, num_repeats=1, run_test=True)
+            # Displays the page after submitting data, passing variables to the HTML
+        return render_template('submitted.html', rare_model_name=model_dict[best_rare_model], clr_model_name=model_dict[best_clr_model],
+                               rare_plot=rare_plot, rare_list=rare_list, best_rare_model=best_rare_model,
+                               clr_plot=clr_plot, clr_list=clr_list, best_clr_model=best_clr_model, model_dict=model_dict)
     if request.method == 'GET':
         return render_template('index.html')
-    return render_template('index.html')
+    return render_template('index.html') # Displays the first page
 
 if __name__ == "__gui__":
-    app.run(debug=True)
+    app.run(debug=False)

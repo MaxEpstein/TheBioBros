@@ -5,19 +5,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>GUTCHECK BETA</title>
+    <title>GUTCHECK</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600">
     <!-- https://fonts.google.com/specimen/Open+Sans -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/fontawesome.min.css') }}">
     <!-- https://fontawesome.com/ -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/fullcalendar.min.css') }}">
-    <!-- https://fullcalendar.io/ -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
     <!-- https://getbootstrap.com/ -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/tooplate.css') }}">
 </head>
 
-<body id="reportsPage">
+<!--This page is just the home screen where you upload the datasets.-->
+
+<body id="Page">
     <div class="" id="home">
         <div class="container-fluid">
             <div class="row">
@@ -30,7 +30,7 @@
                         <button class="navbar-toggler ml-auto mr-0" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                             aria-expanded="false" aria-label="Toggle navigation">
                             <span class="navbar-toggler-icon"></span>
-                        </button>
+                        </button> <!--This is where you upload the datasets.-->
                         <form method="POST" action="/" enctype="multipart/form-data">
                             <input type="file" id="rare" name="filerare" accept=".csv">
                             <input type="file" id="clr" name="fileclr" accept=".csv">
@@ -39,7 +39,6 @@
                     </nav>
                 </div>
             </div>
-            <!-- row -->
             <div class="row tm-content-row tm-mt-big">
                 <div class="tm-col tm-col">
                     <div class="bg-white tm-block h-100">
@@ -54,10 +53,6 @@
     <script src="{{ url_for('static', filename='js/moment.min.js') }}"></script>
     <!-- https://momentjs.com/ -->
     <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/Chart.min.js') }}"></script>
-    <!-- http://www.chartjs.org/docs/latest/ -->
-    <script src="{{ url_for('static', filename='js/fullcalendar.min.js') }}"></script>
-    <!-- https://fullcalendar.io/ -->
     <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
     <!-- https://getbootstrap.com/ -->
     <script src="{{ url_for('static', filename='js/tooplate-scripts.js') }}"></script>
