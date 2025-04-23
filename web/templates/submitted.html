@@ -5,12 +5,13 @@
 <script>
     const rare_plot = JSON.parse('{{ rare_plot | tojson }}');
     const clr_plot = JSON.parse('{{ clr_plot | tojson }}');
+    const rare_list = JSON.parse('{{ rare_list | tojson }}');
+    const clr_list = JSON.parse('{{ clr_list | tojson }}');
     const rare_model_name = JSON.parse('{{ rare_model_name | tojson }}');
     const rare_model = JSON.parse('{{ rare_model | tojson }}');
     const clr_model_name = JSON.parse('{{ clr_model_name | tojson }}');
     const clr_model = JSON.parse('{{ clr_model | tojson }}');
-    document.getElementById("text1").textContent = 
-        `The best model, based on AUC, is ${dict[rare_model_name]}`;
+    const model_dict = JSON.parse('{{ model_dict | tojson }}');
 </script>
 
 <head>
@@ -22,8 +23,6 @@
     <!-- https://fonts.google.com/specimen/Open+Sans -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/fontawesome.min.css') }}">
     <!-- https://fontawesome.com/ -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/fullcalendar.min.css') }}">
-    <!-- https://fullcalendar.io/ -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
     <!-- https://getbootstrap.com/ -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/tooplate.css') }}">
@@ -56,6 +55,7 @@
                 <button class="tablinks" onclick="openCity(event, 'CLR')">CLR</button>
                 <button class="tablinks" onclick="openCity(event, 'FS')">Feature Selection</button>
                 <button class="tablinks" onclick="openCity(event, 'vs')">Rarefaction VS CLR</button>
+                <button class="tablinks" onclick="openCity(event, 'r')">Model Rankings</button>
               </div>
             <!-- row -->
             <div id="Rare" class="tabcontent">
@@ -63,7 +63,7 @@
                 <div class="tm-col tm-col">
                     <div class="bg-white tm-block h-100">
                         <h2 class="tm-block-title">Rarefaction Model Evaluation</h2>
-                        <h6 class="tm-title" id="text1">The best model, based on AUC, is {{rare_model_name}}</h6>
+                        <h6 class="tm-title" id="text1">The best model, based on AUC, is {{model_dict[rare_list[0]]}}</h6>
                         <div style="display: flex; justify-content: space-between; align-items: start;">
                         <select name="cars" id="cars" onchange="myFunction1(this.value)">
                             <option value="best">Best Model</option>
@@ -134,8 +134,7 @@
                             <option value="gnb">Gaussian Naive-Bayes</option>
                             <option value="mlp">Multi-Layer Perception</option>
                           </select>
-                          <img id="model2" src="data:image/png;base64, {{rare_plot[rare_model]['interpret']}}" alt="Red dot" />
-                        <canvas id="barChart"></canvas>
+                          <img id="model2" src="data:image/png;base64, {{rare_plot[rare_model]['interpret']}}" alt="Uh oh, this model does not work, pick another!" />
                     </div>
                 </div>
                 <div class="tm-col tm-col">
@@ -240,7 +239,6 @@
                         </div>
                           <img id="model3" src="data:image/png;base64, {{clr_plot[clr_model]['metrics']}}" alt="Red dot" />
                           <img id="model13" src="data:image/png;base64, {{clr_plot[clr_model]['metrics']}}" alt="Red dot" />
-                        <canvas id="lineChart" class="chartjs-render-monitor"></canvas>
                     </div>
                 </div>
                 <div class="tm-col tm-col">
@@ -267,8 +265,7 @@
                             <option value="gnb">Gaussian Naive-Bayes</option>
                             <option value="mlp">Multi-Layer Perception</option>
                           </select>
-                          <img id="model4" src="data:image/png;base64, {{clr_plot[clr_model]['interpret']}}" alt="Red dot" />
-                        <canvas id="barChart"></canvas>
+                          <img id="model4" src="data:image/png;base64, {{clr_plot[clr_model]['interpret']}}" alt="Uh oh, this model does not work, pick another!" />
                     </div>
                 </div>
                 <div class="tm-col tm-col">
@@ -340,7 +337,6 @@
                                 <option value="r">Recall</option>
                               </select>
                               <img id="model7" style="width: 55vw; min-width: 330px;" src="{{ url_for('static', filename='img/rare_k_plots/rare_ACC_vs_k.jpg') }}"Red dot" />
-                            <canvas id="lineChart" class="chartjs-render-monitor"></canvas>
                         </div>
                     </div>
                 </div>
@@ -448,16 +444,62 @@
                 </div>
                 </div>
         </div>
+        <div id="r" class="tabcontent">
+            <div class="row tm-content-row tm-mt-big">
+                <div class="tm-col tm-col">
+                    <div class="bg-white tm-block h-100">
+                        <h2 class="tm-block-title">Ranking of Models Trained on Rarefaction Dataset</h2>
+                        <h6 class="tm-title">Ranked by AUC</h6>
+                        <h6 class="tm-title">1. {{model_dict[rare_list[0]]}}</h6>
+                        <h6 class="tm-title">2. {{model_dict[rare_list[1]]}}</h6>
+                        <h6 class="tm-title">3. {{model_dict[rare_list[2]]}}</h6>
+                        <h6 class="tm-title">4. {{model_dict[rare_list[3]]}}</h6>
+                        <h6 class="tm-title">5. {{model_dict[rare_list[4]]}}</h6>
+                        <h6 class="tm-title">6. {{model_dict[rare_list[5]]}}</h6>
+                        <h6 class="tm-title">7. {{model_dict[rare_list[6]]}}</h6>
+                        <h6 class="tm-title">8. {{model_dict[rare_list[7]]}}</h6>
+                        <h6 class="tm-title">9. {{model_dict[rare_list[8]]}}</h6>
+                        <h6 class="tm-title">10. {{model_dict[rare_list[9]]}}</h6>
+                        <h6 class="tm-title">11. {{model_dict[rare_list[10]]}}</h6>
+                        <h6 class="tm-title">12. {{model_dict[rare_list[11]]}}</h6>
+                        <h6 class="tm-title">13. {{model_dict[rare_list[12]]}}</h6>
+                        <h6 class="tm-title">14. {{model_dict[rare_list[13]]}}</h6>
+                        <h6 class="tm-title">15. {{model_dict[rare_list[14]]}}</h6>
+                        <h6 class="tm-title">16. {{model_dict[rare_list[15]]}}</h6>
+                        <h6 class="tm-title">17. {{model_dict[rare_list[16]]}}</h6>
+                    </div>
+                </div>
+                <div class="tm-col tm-col">
+                    <div class="bg-white tm-block h-100">
+                        <h2 class="tm-block-title">Ranking of Models Trained on CLR Dataset</h2>
+                        <h6 class="tm-title">Ranked by AUC</h6>
+                        <h6 class="tm-title">1. {{model_dict[clr_list[0]]}}</h6>
+                        <h6 class="tm-title">2. {{model_dict[clr_list[1]]}}</h6>
+                        <h6 class="tm-title">3. {{model_dict[clr_list[2]]}}</h6>
+                        <h6 class="tm-title">4. {{model_dict[clr_list[3]]}}</h6>
+                        <h6 class="tm-title">5. {{model_dict[clr_list[4]]}}</h6>
+                        <h6 class="tm-title">6. {{model_dict[clr_list[5]]}}</h6>
+                        <h6 class="tm-title">7. {{model_dict[clr_list[6]]}}</h6>
+                        <h6 class="tm-title">8. {{model_dict[clr_list[7]]}}</h6>
+                        <h6 class="tm-title">9. {{model_dict[clr_list[8]]}}</h6>
+                        <h6 class="tm-title">10. {{model_dict[clr_list[9]]}}</h6>
+                        <h6 class="tm-title">11. {{model_dict[clr_list[10]]}}</h6>
+                        <h6 class="tm-title">12. {{model_dict[clr_list[11]]}}</h6>
+                        <h6 class="tm-title">13. {{model_dict[clr_list[12]]}}</h6>
+                        <h6 class="tm-title">14. {{model_dict[clr_list[13]]}}</h6>
+                        <h6 class="tm-title">15. {{model_dict[clr_list[14]]}}</h6>
+                        <h6 class="tm-title">16. {{model_dict[clr_list[15]]}}</h6>
+                        <h6 class="tm-title">17. {{model_dict[clr_list[16]]}}</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
     <!-- https://jquery.com/download/ -->
     <script src="{{ url_for('static', filename='js/moment.min.js') }}"></script>
     <!-- https://momentjs.com/ -->
     <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/Chart.min.js') }}"></script>
-    <!-- http://www.chartjs.org/docs/latest/ -->
-    <script src="{{ url_for('static', filename='js/fullcalendar.min.js') }}"></script>
-    <!-- https://fullcalendar.io/ -->
     <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
     <!-- https://getbootstrap.com/ -->
     <script src="{{ url_for('static', filename='js/tooplate-scripts.js') }}"></script>

@@ -1,15 +1,11 @@
 from flask import Flask, render_template, request
-import csv, io
 from main import pipeline
 import pandas as pd
-import base64
-from io import BytesIO
-from PIL import Image
 
 app = Flask(__name__)
 
 @app.route("/", methods=['GET', 'POST'])
-def hello_world():
+def run_app():
     if request.method == 'POST':
         rare = request.files['filerare']
         clr = request.files['fileclr']
@@ -34,18 +30,13 @@ def hello_world():
         }
         if rare:
             df = pd.read_csv(rare)
-            print(df.head())
             _, _, _, _, _, rare_model_name, rare_plot, rare_list = pipeline(df.iloc[:,1:].to_numpy(), feature_names=df.iloc[:,1:-1].columns.tolist())
-            print(rare_model_name)
-            rare_image_metrics = rare_plot
         if clr:
             df = pd.read_csv(clr)
-            print(df.head())
             _, _, _, _, _, clr_model_name, clr_plot, clr_list = pipeline(df.iloc[:,1:].to_numpy(), feature_names=df.iloc[:,1:-1].columns.tolist())
-            print(clr_model_name)
         return render_template('submitted.html', rare_model_name=model_dict[rare_model_name], clr_model_name=model_dict[clr_model_name],
                                rare_plot=rare_plot, rare_list=rare_list, rare_model=rare_model_name,
-                               clr_plot=clr_plot, clr_list=clr_list, clr_model=clr_model_name)
+                               clr_plot=clr_plot, clr_list=clr_list, clr_model=clr_model_name, model_dict=model_dict)
     if request.method == 'GET':
         return render_template('index.html')
     return render_template('index.html')
