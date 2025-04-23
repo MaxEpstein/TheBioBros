@@ -16,7 +16,7 @@ warnings.filterwarnings("ignore", category=UserWarning)
 MODEL_LIST = ["dt", "rf", "gb", "xgb", "lgb", "et","ab", "lr",
               "lr1", "lr2", "lre", "lsv", "nlsv", "knn", "lda", "gnb", "mlp"]
 
-def pipeline(data, seed=42, selection=None, extraction=None, k=100, num_repeats=100, create_metric_plots=True, create_interpret_plot=False, run_test=False):
+def pipeline(data, seed=42, selection=None, extraction=None, k=100, num_repeats=100, feature_names=None, create_metric_plots=True, create_interpret_plot=False, run_test=False):
     '''Runs our ML pipeline on the passed in dataset.
     Args:
         data: the dataset
@@ -25,6 +25,7 @@ def pipeline(data, seed=42, selection=None, extraction=None, k=100, num_repeats=
         extraction: toggling the feature engineering/extraction algorithm used
         k: the number of features to use for the feature engineering method
         num_repeats: the number of random fits for our models to average over (default: 100)
+        feature_names: the names of the columns (i.e. features) to be used for SHAP plots (if enabled)
         create_metric_plots: generates base64 metric plots and ROC curve plots
         create_interpret_plot: generates SHAP plots for models
         run_test: runs feature engineering k value tests for k values 1 - 200 in increments of 10 (WARNING: takes long time to run)
@@ -126,7 +127,7 @@ def pipeline(data, seed=42, selection=None, extraction=None, k=100, num_repeats=
 
     # Create Interpretability Plots (if selected)
     if create_interpret_plot:
-        interpret(model_auc_dec, data_splits, model_res, plot_dict) # Store as base64 so we can later send to front end
+        interpret(model_auc_dec, data_splits, model_res, plot_dict, feature_names) # Store as base64 so we can later send to front end
 
     # Run K Value Test (if selected)
     if run_test:
@@ -199,11 +200,11 @@ def create_graph(model_name, metrics):
 if __name__ == "__main__":
     # Rarefaction
     rarefaction_data = pd.read_csv("rarefied-feature-table-labeled.csv")
-    rare_data_splits, rare_model_res, rare_model_metrics, rare_df_model_metrics, rare_best_model_name, rare_plot_dict, rare_model_auc_dec = pipeline(rarefaction_data.iloc[:,1:].to_numpy())
+    rare_data_splits, rare_model_res, rare_model_metrics, rare_df_model_metrics, rare_best_model_name, rare_plot_dict, rare_model_auc_dec = pipeline(rarefaction_data.iloc[:,1:].to_numpy(), feature_names=rarefaction_data.iloc[:,1:-1].columns.tolist())
 
     # CLR 
     clr_data = pd.read_csv("reduced-clr-feature-table-labeled.csv")
-    clr_data_splits, clr_model_res, clr_model_metrics, clr_df_model_metrics, clr_best_model_name, clr_plot_dict, clr_model_auc_dec = pipeline(clr_data.iloc[:,1:].to_numpy())
+    clr_data_splits, clr_model_res, clr_model_metrics, clr_df_model_metrics, clr_best_model_name, clr_plot_dict, clr_model_auc_dec = pipeline(clr_data.iloc[:,1:].to_numpy(), feature_names=clr_data.iloc[:,1:-1].columns.tolist())
 
     ## If ensemble model wanted, this code will return the ensemble model based on the above results of rarefaction and clr best models:
     # ensemble = models.ensemble_model([model_info[1][1] for model_info in rare_model_res[rare_best_model_name].items()],

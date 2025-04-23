@@ -31,7 +31,9 @@ def get_metrics(y_test, x_test, y_pred, model):
     fpr, tpr, _ = roc_curve(y_test, y_prob)
     return  auc, accuracy, precision, recall, f1, fpr, tpr
 
-def interpret(list_of_models, list_of_splits, model_results, dictionary):
+def interpret(list_of_models, list_of_splits, model_results, dictionary, feature_names=None):
+    # From a list of models and train-test splits,
+    # generates the average SHAP values for each feature.
     '''From a list of models and train-test splits,
        generates the average SHAP values for each feature and plots.
     Args:
@@ -74,8 +76,9 @@ def interpret(list_of_models, list_of_splits, model_results, dictionary):
 
         all_values = np.array([exp.values for exp in shap_explanations])
         median_values = np.median(all_values, axis=0)
-        feature_names = shap_explanations[0].feature_names
-        print(feature_names)
+
+        if feature_names is None:
+            feature_names = shap_explanations[0].feature_names
 
         summary_explanation = shap.Explanation(
             values=median_values,
