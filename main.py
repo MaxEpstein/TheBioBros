@@ -25,6 +25,7 @@ def pipeline(data, seed=42, selection=None, extraction=None, k=100, num_repeats=
         extraction: toggling the feature engineering/extraction algorithm used
         k: the number of features to use for the feature engineering method
         num_repeats: the number of random fits for our models to average over (default: 100)
+        feature_names: the names of the columns (i.e. features) to be used for SHAP plots (if enabled)
         create_metric_plots: generates base64 metric plots and ROC curve plots
         create_interpret_plot: generates SHAP plots for models
         run_test: runs feature engineering k value tests for k values 1 - 200 in increments of 10 (WARNING: takes long time to run)
