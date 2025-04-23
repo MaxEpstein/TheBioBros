@@ -15,9 +15,9 @@ warnings.filterwarnings("ignore", category=UserWarning)
 
 MODEL_LIST = ["dt", "rf", "gb", "xgb", "lgb", "et","ab", "lr", "lr1", "lr2", "lre", "lsv", "nlsv", "knn", "lda", "gnb", "mlp"]
 
-def pipeline(data, selection=None, extraction=None, k=20, num_repeats=100, feature_names=None, create_metric_plots=True, create_interpret_plot=False, run_test=False):
+def pipeline(data, selection=None, extraction=None, k=20, num_repeats=100, feature_names=None, create_metric_plots=True, create_interpret_plot=True, run_test=False):
     np.random.seed(42)
-    states = np.random.randint(low = 0, high = 1000000, size=(num_repeats,))
+    states = np.random.randint(low = 0, high = 1000000, size=(1,))
     data_splits = {}
     plot_dict = {}
     for rst in states:
