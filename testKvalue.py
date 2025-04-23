@@ -2,9 +2,10 @@
     # among feature engineering and feature selection methods
 
 # Synthetic Data
-import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+import base64
+import io
 import preprocess
 import modeling as models
 from metrics import getMetrics
@@ -107,12 +108,16 @@ def run_k_test(data, model_name, states, k_vals, title=""):
             ]
             results.append(row)
     df = pd.DataFrame(results, columns=["Method", "K", "AUC", "ACC", "Precision", "Recall", "F1"])
+    return df
 
+def k_test_plots(df, title=""):
+    "Generates plots for each metric based on run_k_test results"
     # Group data by Method
     methods = df['Method'].unique()
     metrics = ["AUC", "ACC", "Precision", "Recall", "F1"]
-
+    plot_dict = {}
     for metric in metrics:
+        buff = io.BytesIO()
         plt.figure(figsize=(8, 5))
         
         for method in methods:
@@ -125,8 +130,8 @@ def run_k_test(data, model_name, states, k_vals, title=""):
         plt.legend(title="Method", bbox_to_anchor=(1.05, 1), loc='upper left')
         plt.grid(True)
         plt.tight_layout()
-        plt.savefig(f'{title}_{metric}_vs_k', format='jpg')
-        plt.show()
+        plt.savefig(buff, format='jpg')
         plt.close()
-    df.to_csv(f'{title}_results.csv')
-    return df
+        buff.seek(0)
+        plot_dict[metric] = str(base64.b64encode(buff.read()).decode())
+    return plot_dict
