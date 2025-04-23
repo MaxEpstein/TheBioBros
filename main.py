@@ -1,7 +1,7 @@
 import numpy as np
 import preprocess
 import modeling as models
-from metrics import getMetrics
+from metrics import get_metrics
 import pandas as pd
 from metrics import interpret
 import matplotlib.pyplot as plt
@@ -85,7 +85,7 @@ def pipeline(data, seed=42, selection=None, extraction=None, k=100, num_repeats=
     for rst in data_splits.keys():
         for model in MODEL_LIST:
             model_metrics[model][rst] = {}
-            metric = getMetrics(data_splits[rst][3], data_splits[rst][1], model_res[model][rst][0], model_res[model][rst][1])
+            metric = get_metrics(data_splits[rst][3], data_splits[rst][1], model_res[model][rst][0], model_res[model][rst][1])
             model_metrics[model][rst]['auc'] = metric[0]
             model_metrics[model][rst]['acc'] = metric[1]
             model_metrics[model][rst]['precision'] = metric[2]

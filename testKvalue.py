@@ -1,16 +1,22 @@
-# For testing the optimal K values for RF (suggested baseline model per Tima's paper)
-    # among feature engineering and feature selection methods
-
-# Synthetic Data
 import matplotlib.pyplot as plt
 import pandas as pd
 import base64
 import io
 import preprocess
 import modeling as models
-from metrics import getMetrics
+from metrics import get_metrics
 
-def run_k_test(data, model_name, states, k_vals, title=""):
+def run_k_test(data, model_name, states, k_vals):
+    '''Preprocesses data through all combinations of k and all methods of feature engineering / extraction
+    and records average model performance with all combinations, passing results into a dataframe.
+    Args:
+        data: dataset to be preprocessed
+        model_name: model to be run on this analysis
+        states: random states to use for preprocessing / data splits
+        k_vals: the list of k values to use for analysis
+    Return:
+        df: results of test for all combinations of k and all 7 methods
+    '''
     methods = ["chi2", "f", "mutual", "pca", "kpca", "umap", "none"]
     selections = ["chi2", "f", "mutual"]
     extractions = ["pca", "kpca", "umap"]
@@ -21,11 +27,12 @@ def run_k_test(data, model_name, states, k_vals, title=""):
         for method in methods:
             data_splits = {}
             print(f"Testing K = {k}")
+            # Preprocesses dataset in all combinations of k and the 7 methods
             for rst in states:
                 data_splits[rst] = preprocess.preprocess(data, rst, selection=method if method in selections else None,
                                                         extraction=method if method in extractions else None, k=k)
             
-            model_res = {} # key as model type, then sub dictionary with rst as key and predicted classes & model itself ex: model_res["dt"][rst] --> (y_pred_dt, dt) 
+            model_res = {}
             model_res[model_name] = {}
             func = None
             match model_name: 
@@ -67,7 +74,8 @@ def run_k_test(data, model_name, states, k_vals, title=""):
                     func = models.model_multiLayerPerceptron
                 case _:
                     raise RuntimeError("Invalid Model Name Received")
-
+            
+            # Runs model on preprocessed data
             for state in data_splits.keys():    
                 model_res[model_name][state] = func(*data_splits[state])
 
@@ -81,7 +89,7 @@ def run_k_test(data, model_name, states, k_vals, title=""):
 
             # calculate the metrics for all models
             for rst in data_splits.keys():
-                metric = getMetrics(data_splits[rst][3], data_splits[rst][1], model_res[model_name][rst][0], model_res[model_name][rst][1])
+                metric = get_metrics(data_splits[rst][3], data_splits[rst][1], model_res[model_name][rst][0], model_res[model_name][rst][1])
                 model_metrics[model_name]['auc'] += metric[0]
                 model_metrics[model_name]['acc'] += metric[1]
                 model_metrics[model_name]['precision'] += metric[2]
@@ -110,7 +118,7 @@ def run_k_test(data, model_name, states, k_vals, title=""):
     df = pd.DataFrame(results, columns=["Method", "K", "AUC", "ACC", "Precision", "Recall", "F1"])
     return df
 
-def k_test_plots(df, title=""):
+def k_test_plots(df):
     "Generates plots for each metric based on run_k_test results"
     # Group data by Method
     methods = df['Method'].unique()
