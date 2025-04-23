@@ -1,14 +1,4 @@
 # This file is for the preprocessing component of the pipeline.
-
-# Steps:
-    # 1a: Encode Target Variable
-        # 1b: Train-Test Split of 80% - 20%
-    # 2: Remove features with zero variance (VarianceThreshold)
-    # 3: Normalize the dataset (MinMax Scaler)
-    # 4: Apply Feature Selection Methods (optionally)
-    # 5: Apply Feature Extraction Methods (optionally)
-
-# Imports
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
@@ -18,22 +8,55 @@ from sklearn.decomposition import PCA, KernelPCA
 import umap
 
 def preprocess(data, state=42, selection=None, extraction=None, k=10):
+    '''Preprocesses datasets by encoding the target variable,
+    doing a train-test split of 80% - 20%, removing features with zero variance,
+    normalizing via Min-Max Scaler, and optionally applying feature selection or extraction.
+    
+    Args:
+    data: the dataset we wish to preprocess. Must be numeric and labels must be integers 1 or 0
+    state: random state for splits and optional feature engineering methods
+    selection: optional selection of a feature selection method (ex: 'chi2', 'f', 'mutual', None)
+    extraction: optional selection of a feature extraction method (ex: 'pca', 'kpca', 'umap', None)
+    k: corresponds to k best features for selection and k components for extraction. 
+        Must be >= 1 and if greater than number of features it will be set to number of features
+    
+    Return:
+    tuple of (X_train, X_test, y_train, y_test)
+    '''
     try:
         assert len(data.shape) == 2
         assert data.shape[1] >= 2
     except:
         raise Exception("Data must be two-dimensional array. Verify your data is properly shaped.")
     
+    try:
+        assert k >= 1
+    except:
+        raise ValueError("k must be >= 1")
+    
+    try:
+        assert data.shape[0] > 0
+    except:
+        raise Exception("Array contains no rows.")
+
+    
     X, y = data[:,:-1], data[:,-1]
-    y = y.astype(int)
+    try:
+        y = y.astype(int)
+    except:
+        raise Exception("Labels cannot be converted to integer type.")
     
     # 1b - Encode Target Variable
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=state)
     
     # 2 - Remove features with zero variance (VarianceThreshold)
-    vt = VarianceThreshold()
-    X_train = vt.fit_transform(X_train)
-    X_test = vt.transform(X_test)
+    try:
+        vt = VarianceThreshold()
+        X_train = vt.fit_transform(X_train)
+        X_test = vt.transform(X_test)
+    except:
+        raise Exception("No feature in X meets the variance threshold")
+        
 
     # 3 - Normalize the dataset (MinMax Scaler)
     mm = MinMaxScaler()
