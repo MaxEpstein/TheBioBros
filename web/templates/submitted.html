@@ -1,0 +1,655 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<script> //Passed in variables
+    const rare_plot = JSON.parse('{{ rare_plot | tojson }}');
+    const clr_plot = JSON.parse('{{ clr_plot | tojson }}');
+    const rare_list = JSON.parse('{{ rare_list | tojson }}');
+    const clr_list = JSON.parse('{{ clr_list | tojson }}');
+    const rare_model_name = JSON.parse('{{ rare_model_name | tojson }}');
+    const best_rare_model = JSON.parse('{{ best_rare_model | tojson }}');
+    const clr_model_name = JSON.parse('{{ clr_model_name | tojson }}');
+    const best_clr_model = JSON.parse('{{ best_clr_model | tojson }}');
+    const model_dict = JSON.parse('{{ model_dict | tojson }}');
+</script>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>GUTCHECK</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600"> <!--Stylesheets-->
+    <!-- https://fonts.google.com/specimen/Open+Sans -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/fontawesome.min.css') }}">
+    <!-- https://fontawesome.com/ -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <!-- https://getbootstrap.com/ -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/tooplate.css') }}">
+</head>
+
+<body id="Page">
+    <div class="" id="home">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <nav class="navbar navbar-expand-xl navbar-light bg-light">
+                        <a class="navbar-brand" href="#">
+                            <i class="fa fa-3x fa-flask"></i>
+                            <h1 class="tm-site-title mb-0">GutCheck</h1> <!--Topright Title-->
+                        </a>
+                        <button class="navbar-toggler ml-auto mr-0" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                            aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <form method="POST" action="/" enctype="multipart/form-data"> <!--File submissions-->
+                            <input type="file" id="rare" name="filerare" accept=".csv">
+                            <input type="file" id="clr" name="fileclr" accept=".csv">
+                            <input type="submit">
+                        </form>
+                    </nav>
+                </div>
+            </div>
+            <div class="tab"> <!--Tab Menu-->
+                <button class="tablinks" onclick="openTab(event, 'Rare')">Rarefaction</button>
+                <button class="tablinks" onclick="openTab(event, 'CLR')">CLR</button>
+                <button class="tablinks" onclick="openTab(event, 'FS')">Feature Selection</button>
+                <button class="tablinks" onclick="openTab(event, 'vs')">Rarefaction VS CLR</button>
+                <button class="tablinks" onclick="openTab(event, 'r')">Model Rankings</button>
+              </div>
+            <!--Below is the main content of the website.-->
+            <!--You can find each content box based off of the tabcontent it is under, and the title above the dropdowns.-->
+            <!--This tab shows plots for models trained with the Rarefaction data.-->
+            <div id="Rare" class="tabcontent">
+            <div class="row tm-content-row tm-mt-big">
+                <div class="tm-col tm-col">
+                    <div class="bg-white tm-block h-100">
+                        <h2 class="tm-block-title">Rarefaction Model Evaluation</h2>
+                        <h6 class="tm-title" id="text1">The best model, based on AUC, is {{model_dict[rare_list[0]]}}</h6>
+                        <div style="display: flex; justify-content: space-between; align-items: start;">
+                        <select name="cars" id="cars" onchange="rare1p(this.value)">
+                            <option value="best">Best Model</option>
+                            <option value="dt">Decision Tree</option>
+                            <option value="rf">Random Forest</option>
+                            <option value="gb">Gradient Boosting</option>
+                            <option value="xgb">Extreme Gradient Boosting</option>
+                            <option value="lgb">Light Gradient Boosting</option>
+                            <option value="et">Extra Trees</option>
+                            <option value="ab">AdaBoost</option>
+                            <option value="lr">Logistic Regression</option>
+                            <option value="lr1">Lasso Regularization</option>
+                            <option value="lr2">Ridge Regularization</option>
+                            <option value="lre">Elastic Net Regularization</option>
+                            <option value="lsv">Linear Support Vector</option>
+                            <option value="nlsv">Non-Linear Support Vector</option>
+                            <option value="knn">k-Nearest</option>
+                            <option value="lda">Linear Discriminant</option>
+                            <option value="gnb">Gaussian Naive-Bayes</option>
+                            <option value="mlp">Multi-Layer Perceptron</option>
+                          </select>
+                          <select name="cars" id="cars" onchange="rare2p(this.value)">
+                            <option value="best">Best Model</option>
+                            <option value="dt">Decision Tree</option>
+                            <option value="rf">Random Forest</option>
+                            <option value="gb">Gradient Boosting</option>
+                            <option value="xgb">Extreme Gradient Boosting</option>
+                            <option value="lgb">Light Gradient Boosting</option>
+                            <option value="et">Extra Trees</option>
+                            <option value="ab">AdaBoost</option>
+                            <option value="lr">Logistic Regression</option>
+                            <option value="lr1">Lasso Regularization</option>
+                            <option value="lr2">Ridge Regularization</option>
+                            <option value="lre">Elastic Net Regularization</option>
+                            <option value="lsv">Linear Support Vector</option>
+                            <option value="nlsv">Non-Linear Support Vector</option>
+                            <option value="knn">k-Nearest</option>
+                            <option value="lda">Linear Discriminant</option>
+                            <option value="gnb">Gaussian Naive-Bayes</option>
+                            <option value="mlp">Multi-Layer Perceptron</option>
+                          </select>
+                        </div>
+                          <img id="rare1p" src="data:image/png;base64, {{rare_plot[best_rare_model]['metrics']}}"/>
+                          <img id="rare2p" src="data:image/png;base64, {{rare_plot[best_rare_model]['metrics']}}"/>
+                    </div>
+                </div>
+                <div class="tm-col tm-col">
+                    <div class="bg-white tm-block h-100">
+                        <h2 class="tm-block-title">Rarefaction Model Interpretation</h2>
+                        <h6 class="tm-title">The best model, based on AUC, is {{rare_model_name}}</h6>
+                        <select name="cars" id="cars" onchange="rarei(this.value)">
+                            <option value="best">Best Model</option>
+                            <option value="dt">Decision Tree</option>
+                            <option value="rf">Random Forest</option>
+                            <option value="gb">Gradient Boosting</option>
+                            <option value="xgb">Extreme Gradient Boosting</option>
+                            <option value="lgb">Light Gradient Boosting</option>
+                            <option value="et">Extra Trees</option>
+                            <option value="ab">AdaBoost</option>
+                            <option value="lr">Logistic Regression</option>
+                            <option value="lr1">Lasso Regularization</option>
+                            <option value="lr2">Ridge Regularization</option>
+                            <option value="lre">Elastic Net Regularization</option>
+                            <option value="lsv">Linear Support Vector</option>
+                            <option value="nlsv">Non-Linear Support Vector</option>
+                            <option value="knn">k-Nearest</option>
+                            <option value="lda">Linear Discriminant</option>
+                            <option value="gnb">Gaussian Naive-Bayes</option>
+                            <option value="mlp">Multi-Layer Perceptron</option>
+                          </select>
+                          <img id="rarei" src="data:image/png;base64, {{rare_plot[best_rare_model]['interpret']}}" alt="Uh oh, this model does not work, pick another!" />
+                    </div>
+                </div>
+                <div class="tm-col tm-col">
+                    <div class="bg-white tm-block h-100">
+                        <h2 class="tm-block-title">Rarefaction AUC/ROC Plots</h2>
+                        <h6 class="tm-title">The best model, based on AUC, is {{rare_model_name}}</h6>
+                        <div style="display: flex; justify-content: space-between; align-items: start;">
+                        <select name="cars" id="cars" onchange="rare1r(this.value)">
+                            <option value="best">Best Model</option>
+                            <option value="dt">Decision Tree</option>
+                            <option value="rf">Random Forest</option>
+                            <option value="gb">Gradient Boosting</option>
+                            <option value="xgb">Extreme Gradient Boosting</option>
+                            <option value="lgb">Light Gradient Boosting</option>
+                            <option value="et">Extra Trees</option>
+                            <option value="ab">AdaBoost</option>
+                            <option value="lr">Logistic Regression</option>
+                            <option value="lr1">Lasso Regularization</option>
+                            <option value="lr2">Ridge Regularization</option>
+                            <option value="lre">Elastic Net Regularization</option>
+                            <option value="lsv">Linear Support Vector</option>
+                            <option value="nlsv">Non-Linear Support Vector</option>
+                            <option value="knn">k-Nearest</option>
+                            <option value="lda">Linear Discriminant</option>
+                            <option value="gnb">Gaussian Naive-Bayes</option>
+                            <option value="mlp">Multi-Layer Perceptron</option>
+                          </select>
+                          <select name="cars" id="cars" onchange="rare2r(this.value)">
+                            <option value="best">Best Model</option>
+                            <option value="dt">Decision Tree</option>
+                            <option value="rf">Random Forest</option>
+                            <option value="gb">Gradient Boosting</option>
+                            <option value="xgb">Extreme Gradient Boosting</option>
+                            <option value="lgb">Light Gradient Boosting</option>
+                            <option value="et">Extra Trees</option>
+                            <option value="ab">AdaBoost</option>
+                            <option value="lr">Logistic Regression</option>
+                            <option value="lr1">Lasso Regularization</option>
+                            <option value="lr2">Ridge Regularization</option>
+                            <option value="lre">Elastic Net Regularization</option>
+                            <option value="lsv">Linear Support Vector</option>
+                            <option value="nlsv">Non-Linear Support Vector</option>
+                            <option value="knn">k-Nearest</option>
+                            <option value="lda">Linear Discriminant</option>
+                            <option value="gnb">Gaussian Naive-Bayes</option>
+                            <option value="mlp">Multi-Layer Perceptron</option>
+                          </select>
+                            </div>
+                          <img id="rare1r" src="data:image/png;base64, {{rare_plot[best_rare_model]['roc_plot']}}"/>
+                          <img id="rare2r" src="data:image/png;base64, {{rare_plot[best_rare_model]['roc_plot']}}"/>
+                    </div>
+                </div>
+            </div>
+            </div>
+            <!--This tab shows plots for models trained with the CLR data.-->
+            <div id="CLR" class="tabcontent">
+            <div class="row tm-content-row tm-mt-big">
+                <div class="tm-col tm-col">
+                    <div class="bg-white tm-block h-100">
+                        <h2 class="tm-block-title">CLR Model Evaluation</h2>
+                        <h6 class="tm-title">The best model, based on AUC, is {{clr_model_name}}</h6>
+                        <div style="display: flex; justify-content: space-between; align-items: start;">
+                        <select name="cars" id="cars" onchange="clr1p(this.value)">
+                            <option value="best">Best Model</option>
+                            <option value="dt">Decision Tree</option>
+                            <option value="rf">Random Forest</option>
+                            <option value="gb">Gradient Boosting</option>
+                            <option value="xgb">Extreme Gradient Boosting</option>
+                            <option value="lgb">Light Gradient Boosting</option>
+                            <option value="et">Extra Trees</option>
+                            <option value="ab">AdaBoost</option>
+                            <option value="lr">Logistic Regression</option>
+                            <option value="lr1">Lasso Regularization</option>
+                            <option value="lr2">Ridge Regularization</option>
+                            <option value="lre">Elastic Net Regularization</option>
+                            <option value="lsv">Linear Support Vector</option>
+                            <option value="nlsv">Non-Linear Support Vector</option>
+                            <option value="knn">k-Nearest</option>
+                            <option value="lda">Linear Discriminant</option>
+                            <option value="gnb">Gaussian Naive-Bayes</option>
+                            <option value="mlp">Multi-Layer Perceptron</option>
+                          </select>
+                          <select name="cars" id="cars" onchange="clr2p(this.value)">
+                            <option value="best">Best Model</option>
+                            <option value="dt">Decision Tree</option>
+                            <option value="rf">Random Forest</option>
+                            <option value="gb">Gradient Boosting</option>
+                            <option value="xgb">Extreme Gradient Boosting</option>
+                            <option value="lgb">Light Gradient Boosting</option>
+                            <option value="et">Extra Trees</option>
+                            <option value="ab">AdaBoost</option>
+                            <option value="lr">Logistic Regression</option>
+                            <option value="lr1">Lasso Regularization</option>
+                            <option value="lr2">Ridge Regularization</option>
+                            <option value="lre">Elastic Net Regularization</option>
+                            <option value="lsv">Linear Support Vector</option>
+                            <option value="nlsv">Non-Linear Support Vector</option>
+                            <option value="knn">k-Nearest</option>
+                            <option value="lda">Linear Discriminant</option>
+                            <option value="gnb">Gaussian Naive-Bayes</option>
+                            <option value="mlp">Multi-Layer Perceptron</option>
+                          </select>
+                        </div>
+                          <img id="clr1p" src="data:image/png;base64, {{clr_plot[best_clr_model]['metrics']}}"/>
+                          <img id="clr2p" src="data:image/png;base64, {{clr_plot[best_clr_model]['metrics']}}"/>
+                    </div>
+                </div>
+                <div class="tm-col tm-col">
+                    <div class="bg-white tm-block h-100">
+                        <h2 class="tm-block-title">CLR Model Interpretation</h2>
+                        <h6 class="tm-title">The best model, based on AUC, is {{clr_model_name}}</h6>
+                        <select name="cars" id="cars" onchange="clri(this.value)">
+                            <option value="best">Best Model</option>
+                            <option value="dt">Decision Tree</option>
+                            <option value="rf">Random Forest</option>
+                            <option value="gb">Gradient Boosting</option>
+                            <option value="xgb">Extreme Gradient Boosting</option>
+                            <option value="lgb">Light Gradient Boosting</option>
+                            <option value="et">Extra Trees</option>
+                            <option value="ab">AdaBoost</option>
+                            <option value="lr">Logistic Regression</option>
+                            <option value="lr1">Lasso Regularization</option>
+                            <option value="lr2">Ridge Regularization</option>
+                            <option value="lre">Elastic Net Regularization</option>
+                            <option value="lsv">Linear Support Vector</option>
+                            <option value="nlsv">Non-Linear Support Vector</option>
+                            <option value="knn">k-Nearest</option>
+                            <option value="lda">Linear Discriminant</option>
+                            <option value="gnb">Gaussian Naive-Bayes</option>
+                            <option value="mlp">Multi-Layer Perceptron</option>
+                          </select>
+                          <img id="clri" src="data:image/png;base64, {{clr_plot[best_clr_model]['interpret']}}" alt="Uh oh, this model does not work, pick another!" />
+                    </div>
+                </div>
+                <div class="tm-col tm-col">
+                    <div class="bg-white tm-block h-100">
+                        <h2 class="tm-block-title">CLR AUC/ROC Plots</h2>
+                        <h6 class="tm-title">The best model, based on AUC, is {{clr_model_name}}</h6>
+                        <div style="display: flex; justify-content: space-between; align-items: start;">
+                        <select name="cars" id="cars" onchange="clr1r(this.value)">
+                            <option value="best">Best Model</option>
+                            <option value="dt">Decision Tree</option>
+                            <option value="rf">Random Forest</option>
+                            <option value="gb">Gradient Boosting</option>
+                            <option value="xgb">Extreme Gradient Boosting</option>
+                            <option value="lgb">Light Gradient Boosting</option>
+                            <option value="et">Extra Trees</option>
+                            <option value="ab">AdaBoost</option>
+                            <option value="lr">Logistic Regression</option>
+                            <option value="lr1">Lasso Regularization</option>
+                            <option value="lr2">Ridge Regularization</option>
+                            <option value="lre">Elastic Net Regularization</option>
+                            <option value="lsv">Linear Support Vector</option>
+                            <option value="nlsv">Non-Linear Support Vector</option>
+                            <option value="knn">k-Nearest</option>
+                            <option value="lda">Linear Discriminant</option>
+                            <option value="gnb">Gaussian Naive-Bayes</option>
+                            <option value="mlp">Multi-Layer Perceptron</option>
+                          </select>
+                          <select name="cars" id="cars" onchange="clr2r(this.value)">
+                            <option value="best">Best Model</option>
+                            <option value="dt">Decision Tree</option>
+                            <option value="rf">Random Forest</option>
+                            <option value="gb">Gradient Boosting</option>
+                            <option value="xgb">Extreme Gradient Boosting</option>
+                            <option value="lgb">Light Gradient Boosting</option>
+                            <option value="et">Extra Trees</option>
+                            <option value="ab">AdaBoost</option>
+                            <option value="lr">Logistic Regression</option>
+                            <option value="lr1">Lasso Regularization</option>
+                            <option value="lr2">Ridge Regularization</option>
+                            <option value="lre">Elastic Net Regularization</option>
+                            <option value="lsv">Linear Support Vector</option>
+                            <option value="nlsv">Non-Linear Support Vector</option>
+                            <option value="knn">k-Nearest</option>
+                            <option value="lda">Linear Discriminant</option>
+                            <option value="gnb">Gaussian Naive-Bayes</option>
+                            <option value="mlp">Multi-Layer Perceptron</option>
+                          </select>
+                        </div>
+                          <img id="clr1r" src="data:image/png;base64, {{clr_plot[best_clr_model]['roc_plot']}}"/>
+                          <img id="clr2r" src="data:image/png;base64, {{clr_plot[best_clr_model]['roc_plot']}}"/>
+                    </div>
+                </div>
+            </div>
+            </div>
+            <!--This tab shows plots for feature selection.-->
+            <div id="FS" class="tabcontent">
+                <div class="row tm-content-row tm-mt-big">
+                    <div class="tm-col tm-col">
+                        <div class="bg-white tm-block h-100">
+                            <h2 class="tm-block-title">Feature Selection Plots</h2>
+                            <select name="cars" id="m1" onchange="fs()">
+                                <option value="r">Rarefaction</option>
+                                <option value="c">CLR</option>
+                              </select>
+                              <select name="cars" id="m2" onchange="fs()">
+                                <option value="acc">ACC</option>
+                                <option value="auc">AUC</option>
+                                <option value="f">F1</option>
+                                <option value="p">Precision</option>
+                                <option value="r">Recall</option>
+                              </select>
+                              <img id="fs" style="width: 55vw; min-width: 330px;" src="{{ url_for('static', filename='img/rare_k_plots/rare_ACC_vs_k.jpg') }}"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--This tab allows you to compare models from Rarefaction and CLR datasets..-->
+            <div id="vs" class="tabcontent">
+                <div class="row tm-content-row tm-mt-big">
+                    <div class="tm-col tm-col">
+                        <div class="bg-white tm-block h-100">
+                            <h2 class="tm-block-title">Rarefaction vs CLR Metrics</h2>
+                            <div style="display: flex; justify-content: space-between; align-items: start;">
+                            <select name="cars" id="cars" onchange="vs1p(this.value)">
+                                <option value="best">Best Model</option>
+                                <option value="dt">Decision Tree</option>
+                                <option value="rf">Random Forest</option>
+                                <option value="gb">Gradient Boosting</option>
+                                <option value="xgb">Extreme Gradient Boosting</option>
+                                <option value="lgb">Light Gradient Boosting</option>
+                                <option value="et">Extra Trees</option>
+                                <option value="ab">AdaBoost</option>
+                                <option value="lr">Logistic Regression</option>
+                                <option value="lr1">Lasso Regularization</option>
+                                <option value="lr2">Ridge Regularization</option>
+                                <option value="lre">Elastic Net Regularization</option>
+                                <option value="lsv">Linear Support Vector</option>
+                                <option value="nlsv">Non-Linear Support Vector</option>
+                                <option value="knn">k-Nearest</option>
+                                <option value="lda">Linear Discriminant</option>
+                                <option value="gnb">Gaussian Naive-Bayes</option>
+                                <option value="mlp">Multi-Layer Perceptron</option>
+                              </select>
+                              <select name="cars" id="cars" onchange="vs2p(this.value)">
+                                <option value="best">Best Model</option>
+                                <option value="dt">Decision Tree</option>
+                                <option value="rf">Random Forest</option>
+                                <option value="gb">Gradient Boosting</option>
+                                <option value="xgb">Extreme Gradient Boosting</option>
+                                <option value="lgb">Light Gradient Boosting</option>
+                                <option value="et">Extra Trees</option>
+                                <option value="ab">AdaBoost</option>
+                                <option value="lr">Logistic Regression</option>
+                                <option value="lr1">Lasso Regularization</option>
+                                <option value="lr2">Ridge Regularization</option>
+                                <option value="lre">Elastic Net Regularization</option>
+                                <option value="lsv">Linear Support Vector</option>
+                                <option value="nlsv">Non-Linear Support Vector</option>
+                                <option value="knn">k-Nearest</option>
+                                <option value="lda">Linear Discriminant</option>
+                                <option value="gnb">Gaussian Naive-Bayes</option>
+                                <option value="mlp">Multi-Layer Perceptron</option>
+                              </select>
+                            </div>
+                              <img id="vs1p" src="data:image/png;base64, {{rare_plot[best_rare_model]['metrics']}}"/>
+                              <img id="vs2p" src="data:image/png;base64, {{clr_plot[best_clr_model]['metrics']}}"/>
+                        </div>
+                    </div>
+                    <div class="tm-col tm-col">
+                        <div class="bg-white tm-block h-100">
+                            <h2 class="tm-block-title">Rarefaction vs CLR AUC/ROC Plots</h2>
+                            <div style="display: flex; justify-content: space-between; align-items: start;">
+                            <select name="cars" id="cars" onchange="vs1r(this.value)">
+                                <option value="best">Best Model</option>
+                                <option value="dt">Decision Tree</option>
+                                <option value="rf">Random Forest</option>
+                                <option value="gb">Gradient Boosting</option>
+                                <option value="xgb">Extreme Gradient Boosting</option>
+                                <option value="lgb">Light Gradient Boosting</option>
+                                <option value="et">Extra Trees</option>
+                                <option value="ab">AdaBoost</option>
+                                <option value="lr">Logistic Regression</option>
+                                <option value="lr1">Lasso Regularization</option>
+                                <option value="lr2">Ridge Regularization</option>
+                                <option value="lre">Elastic Net Regularization</option>
+                                <option value="lsv">Linear Support Vector</option>
+                                <option value="nlsv">Non-Linear Support Vector</option>
+                                <option value="knn">k-Nearest</option>
+                                <option value="lda">Linear Discriminant</option>
+                                <option value="gnb">Gaussian Naive-Bayes</option>
+                                <option value="mlp">Multi-Layer Perceptron</option>
+                              </select>
+                              <select name="cars" id="cars" onchange="vs2r(this.value)">
+                                <option value="best">Best Model</option>
+                                <option value="dt">Decision Tree</option>
+                                <option value="rf">Random Forest</option>
+                                <option value="gb">Gradient Boosting</option>
+                                <option value="xgb">Extreme Gradient Boosting</option>
+                                <option value="lgb">Light Gradient Boosting</option>
+                                <option value="et">Extra Trees</option>
+                                <option value="ab">AdaBoost</option>
+                                <option value="lr">Logistic Regression</option>
+                                <option value="lr1">Lasso Regularization</option>
+                                <option value="lr2">Ridge Regularization</option>
+                                <option value="lre">Elastic Net Regularization</option>
+                                <option value="lsv">Linear Support Vector</option>
+                                <option value="nlsv">Non-Linear Support Vector</option>
+                                <option value="knn">k-Nearest</option>
+                                <option value="lda">Linear Discriminant</option>
+                                <option value="gnb">Gaussian Naive-Bayes</option>
+                                <option value="mlp">Multi-Layer Perceptron</option>
+                              </select>
+                                </div>
+                              <img id="vs1r" src="data:image/png;base64, {{rare_plot[best_rare_model]['roc_plot']}}"/>
+                              <img id="vs2r" src="data:image/png;base64, {{clr_plot[best_clr_model]['roc_plot']}}"/>
+                        </div>
+                    </div>
+                </div>
+                </div>
+        </div>
+        <!--This tab is a ranking of the 17 models.-->
+        <div id="r" class="tabcontent">
+            <div class="row tm-content-row tm-mt-big">
+                <div class="tm-col tm-col">
+                    <div class="bg-white tm-block h-100">
+                        <h2 class="tm-block-title">Ranking of Models Trained on Rarefaction Dataset</h2>
+                        <h6 class="tm-title">Ranked by AUC</h6>
+                        <h6 class="tm-title">1. {{model_dict[rare_list[0]]}}</h6>
+                        <h6 class="tm-title">2. {{model_dict[rare_list[1]]}}</h6>
+                        <h6 class="tm-title">3. {{model_dict[rare_list[2]]}}</h6>
+                        <h6 class="tm-title">4. {{model_dict[rare_list[3]]}}</h6>
+                        <h6 class="tm-title">5. {{model_dict[rare_list[4]]}}</h6>
+                        <h6 class="tm-title">6. {{model_dict[rare_list[5]]}}</h6>
+                        <h6 class="tm-title">7. {{model_dict[rare_list[6]]}}</h6>
+                        <h6 class="tm-title">8. {{model_dict[rare_list[7]]}}</h6>
+                        <h6 class="tm-title">9. {{model_dict[rare_list[8]]}}</h6>
+                        <h6 class="tm-title">10. {{model_dict[rare_list[9]]}}</h6>
+                        <h6 class="tm-title">11. {{model_dict[rare_list[10]]}}</h6>
+                        <h6 class="tm-title">12. {{model_dict[rare_list[11]]}}</h6>
+                        <h6 class="tm-title">13. {{model_dict[rare_list[12]]}}</h6>
+                        <h6 class="tm-title">14. {{model_dict[rare_list[13]]}}</h6>
+                        <h6 class="tm-title">15. {{model_dict[rare_list[14]]}}</h6>
+                        <h6 class="tm-title">16. {{model_dict[rare_list[15]]}}</h6>
+                        <h6 class="tm-title">17. {{model_dict[rare_list[16]]}}</h6>
+                    </div>
+                </div>
+                <div class="tm-col tm-col">
+                    <div class="bg-white tm-block h-100">
+                        <h2 class="tm-block-title">Ranking of Models Trained on CLR Dataset</h2>
+                        <h6 class="tm-title">Ranked by AUC</h6>
+                        <h6 class="tm-title">1. {{model_dict[clr_list[0]]}}</h6>
+                        <h6 class="tm-title">2. {{model_dict[clr_list[1]]}}</h6>
+                        <h6 class="tm-title">3. {{model_dict[clr_list[2]]}}</h6>
+                        <h6 class="tm-title">4. {{model_dict[clr_list[3]]}}</h6>
+                        <h6 class="tm-title">5. {{model_dict[clr_list[4]]}}</h6>
+                        <h6 class="tm-title">6. {{model_dict[clr_list[5]]}}</h6>
+                        <h6 class="tm-title">7. {{model_dict[clr_list[6]]}}</h6>
+                        <h6 class="tm-title">8. {{model_dict[clr_list[7]]}}</h6>
+                        <h6 class="tm-title">9. {{model_dict[clr_list[8]]}}</h6>
+                        <h6 class="tm-title">10. {{model_dict[clr_list[9]]}}</h6>
+                        <h6 class="tm-title">11. {{model_dict[clr_list[10]]}}</h6>
+                        <h6 class="tm-title">12. {{model_dict[clr_list[11]]}}</h6>
+                        <h6 class="tm-title">13. {{model_dict[clr_list[12]]}}</h6>
+                        <h6 class="tm-title">14. {{model_dict[clr_list[13]]}}</h6>
+                        <h6 class="tm-title">15. {{model_dict[clr_list[14]]}}</h6>
+                        <h6 class="tm-title">16. {{model_dict[clr_list[15]]}}</h6>
+                        <h6 class="tm-title">17. {{model_dict[clr_list[16]]}}</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
+    <!-- https://jquery.com/download/ -->
+    <script src="{{ url_for('static', filename='js/moment.min.js') }}"></script>
+    <!-- https://momentjs.com/ -->
+    <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <!-- https://getbootstrap.com/ -->
+    <script src="{{ url_for('static', filename='js/tooplate-scripts.js') }}"></script>
+    <script> //These functions are for switching out the plots based on the dropdowns
+        function rare1p(val) {
+            if (val == "best")
+                document.getElementById("rare1p").src = "data:image/png;base64," + rare_plot[best_rare_model]['metrics'];
+            else
+                document.getElementById("rare1p").src = "data:image/png;base64," + rare_plot[val]['metrics'];
+        }
+        function rare2p(val) {
+            if (val == "best")
+                document.getElementById("rare2p").src = "data:image/png;base64," + rare_plot[best_rare_model]['metrics'];
+            else
+                document.getElementById("rare2p").src = "data:image/png;base64," + rare_plot[val]['metrics'];
+        }
+        function rarei(val) {
+            if (val == "best")
+                document.getElementById("rarei").src = "data:image/png;base64," + rare_plot[best_rare_model]['interpret'];
+            else
+                document.getElementById("rarei").src = "data:image/png;base64," + rare_plot[val]['interpret'];
+            console.error("No image data for:", val);
+        }
+        function clr1p(val) {
+            if (val == "best")
+                document.getElementById("clr1p").src = "data:image/png;base64," + clr_plot[best_clr_model]['metrics'];
+            else
+                document.getElementById("clr1p").src = "data:image/png;base64," + clr_plot[val]['metrics'];
+            console.error("No image data for:", val);
+        }
+        function clr2p(val) {
+            if (val == "best")
+                document.getElementById("clr2p").src = "data:image/png;base64," + clr_plot[best_clr_model]['metrics'];
+            else
+                document.getElementById("clr2p").src = "data:image/png;base64," + clr_plot[val]['metrics'];
+            console.error("No image data for:", val);
+        }
+        function clri(val) {
+            if (val == "best")
+                document.getElementById("clri").src = "data:image/png;base64," + clr_plot[best_clr_model]['interpret'];
+            else
+                document.getElementById("clri").src = "data:image/png;base64," + clr_plot[val]['interpret'];
+            console.error("No image data for:", val);
+        }
+        function rare1r(val) {
+            if (val == "best")
+                document.getElementById("rare1r").src = "data:image/png;base64," + rare_plot[best_rare_model]['roc_plot'];
+            else
+                document.getElementById("rare1r").src = "data:image/png;base64," + rare_plot[val]['roc_plot'];
+            console.error("No image data for:", val);
+        }
+        function rare2r(val) {
+            if (val == "best")
+                document.getElementById("rare2r").src = "data:image/png;base64," + rare_plot[best_rare_model]['roc_plot'];
+            else
+                document.getElementById("rare2r").src = "data:image/png;base64," + rare_plot[val]['roc_plot'];
+            console.error("No image data for:", val);
+        }
+        function clr1r(val) {
+            if (val == "best")
+                document.getElementById("clr1r").src = "data:image/png;base64," + clr_plot[best_clr_model]['roc_plot'];
+            else
+                document.getElementById("clr1r").src = "data:image/png;base64," + clr_plot[val]['roc_plot'];
+            console.error("No image data for:", val);
+        }
+        function clr2r(val) {
+            if (val == "best")
+                document.getElementById("clr2r").src = "data:image/png;base64," + clr_plot[best_clr_model]['roc_plot'];
+            else
+                document.getElementById("clr2r").src = "data:image/png;base64," + clr_plot[val]['roc_plot'];
+            console.error("No image data for:", val);
+        }
+        function vs1p(val) {
+            if (val == "best")
+                document.getElementById("vs1p").src = "data:image/png;base64," + rare_plot[best_rare_model]['metrics'];
+            else
+                document.getElementById("vs1p").src = "data:image/png;base64," + rare_plot[val]['metrics'];
+            console.error("No image data for:", val);
+        }
+        function vs2p(val) {
+            if (val == "best")
+                document.getElementById("vs2p").src = "data:image/png;base64," + clr_plot[best_clr_model]['metrics'];
+            else
+                document.getElementById("vs2p").src = "data:image/png;base64," + clr_plot[val]['metrics'];
+            console.error("No image data for:", val);
+        }
+        function vs1r(val) {
+            if (val == "best")
+                document.getElementById("vs1r").src = "data:image/png;base64," + rare_plot[best_rare_model]['roc_plot'];
+            else
+                document.getElementById("vs1r").src = "data:image/png;base64," + rare_plot[val]['roc_plot'];
+            console.error("No image data for:", val);
+        }
+        function vs2r(val) {
+            if (val == "best")
+                document.getElementById("vs2r").src = "data:image/png;base64," + clr_plot[best_clr_model]['roc_plot'];
+            else
+                document.getElementById("vs2r").src = "data:image/png;base64," + clr_plot[val]['roc_plot'];
+            console.error("No image data for:", val);
+        }
+        function fs() {
+            var value1 = document.getElementById("m1").value;
+            var value2 = document.getElementById("m2").value;
+            if (value1 == "r")
+                if (value2 == "acc")
+                    document.getElementById("fs").src = "data:image/png;base64," + rare_plot['k_test']['ACC'];
+                else if (value2 == "auc")
+                    document.getElementById("fs").src = "data:image/png;base64," + rare_plot['k_test']['AUC'];
+                else if (value2 == "f")
+                    document.getElementById("fs").src = "data:image/png;base64," + rare_plot['k_test']['F1'];
+                else if (value2 == "p")
+                    document.getElementById("fs").src = "data:image/png;base64," + rare_plot['k_test']['Precision'];
+                else
+                    document.getElementById("fs").src = "data:image/png;base64," + rare_plot['k_test']['Recall'];
+            else
+            if (value2 == "acc")
+                    document.getElementById("fs").src = "data:image/png;base64," + clr_plot['k_test']['ACC'];
+                else if (value2 == "auc")
+                    document.getElementById("fs").src = "data:image/png;base64," + clr_plot['k_test']['AUC'];
+                else if (value2 == "f")
+                    document.getElementById("fs").src = "data:image/png;base64," + clr_plot['k_test']['F1'];
+                else if (value2 == "p")
+                    document.getElementById("fs").src = "data:image/png;base64," + clr_plot['k_test']['Precision'];
+                else
+                    document.getElementById("fs").src = "data:image/png;base64," + clr_plot['k_test']['Recall'];
+        }
+        //This function is for hiding unselected tab content
+        function openTab(evt, tab) {
+
+            var i, tabcontent, tablinks;
+
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+
+            document.getElementById(tab).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+    </script>
+</body>
+</html>
