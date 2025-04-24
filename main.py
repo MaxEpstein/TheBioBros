@@ -131,7 +131,7 @@ def pipeline(data, seed=42, selection=None, extraction=None, k=100, num_repeats=
 
     # Run K Value Test (if selected)
     if run_test:
-        k_vals = [1, 10]
+        k_vals = [1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200]
         k_test_results = run_k_test(data, best_model_name, states=states, k_vals=k_vals)
         plot_dict['k_test'] = k_test_plots(k_test_results)
 
