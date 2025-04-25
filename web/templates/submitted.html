@@ -340,7 +340,7 @@
                                 <option value="p">Precision</option>
                                 <option value="r">Recall</option>
                               </select>
-                              <img id="fs" style="width: 55vw; min-width: 330px;" src="{{ url_for('static', filename='img/rare_k_plots/rare_ACC_vs_k.jpg') }}"/>
+                              <img id="fs" style="width: 55vw; min-width: 330px;" src="data:image/png;base64, {{rare_plot['k_test']['ACC']}}"/>
                         </div>
                     </div>
                 </div>
